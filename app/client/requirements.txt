@@ -1,0 +1,3 @@
+gradio
+celery[redis]
+python-dotenv
