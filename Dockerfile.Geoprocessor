@@ -17,4 +17,6 @@ RUN pip install --no-cache-dir \
 #RUN pip install --upgrade numpy
 RUN rm -rf /root/.cache/pip/*
 
+#RUN useradd -ms /bin/bash celery
+
 ENV PYTHONPATH "${PYTHONPATH}:/app/"

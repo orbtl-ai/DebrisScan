@@ -1,0 +1,20 @@
+FROM tensorflow/serving:2.7.0-gpu
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#    python3-pip
+#RUN rm -rf /var/lib/apt/lists/*
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+#COPY requirements.txt /tmp/requirements.txt
+
+#RUN pip install --no-cache-dir \
+#    -r /tmp/requirements.txt
+#RUN rm -rf /root/.cache/pip/*
+
+# copy over the Tensorflow saved_models
+WORKDIR /app
+COPY app/tf_server/ ./tf_server/

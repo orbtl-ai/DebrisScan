@@ -8,8 +8,11 @@ gradio = "*"
 celery = "*"
 redis = "*"
 flower = "*"
+pandas = "*"
 
 [dev-packages]
+flake8 = "*"
+black = "*"
 
 [requires]
 python_version = "3.8"
