@@ -44,7 +44,7 @@ services:
     container_name: dart-api-geoprocessor
     links:
       - backend:backend
-      #- tf-serve:tf-serve
+      - tf-server:tf-server
     networks:
       - dart-api-network
     volumes:
@@ -67,44 +67,41 @@ services:
 
   # NOTE: we're currently attaching a GPU in the override. Without this the below 
   # worker is an unoptimized CPU worker.
- # tf-serve:
- #   build: 
- #     context: ./app/tf_serve
- #     dockerfile: TFServe.Dockerfile
- #   container_name: dart-api-tf-serve
- #   links:
- #     - backend:backend
- #   ports:
- #     - "8500:8500"
- #     - "8501:8501"
- #   networks:
- #     - dart-api-network
- #   volumes:
- #     - type: bind
- #       source: /home/ross/Documents/app_data
- #       target: /app_data
- #       read_only: false
- #   #environment:
- #     #MODEL_NAME: efficientdet-d0
- #     #OMP_NUM_THREADS: 4                          # replace by the number of cores
- #     #TENSORFLOW_INTER_OP_PARALLELISM: 2
- #     #TENSORFLOW_INTRA_OP_PARALLELISM: 4          # replace by the number of cores
- #   command: 
- #     - --model_config_file=/app/core/models.config
- #     - --rest_api_timeout_in_ms=120000
- #     #- --batching_parameters_file=/app/core/batching.config
- #     #- --enable_batching 
- #   depends_on:
- #     - backend
- #     - client
- ##  attach GPU support here
- #  deploy:
- #     resources:
- #      reservations
- #        devices:
- #          - driver: nvidia
- #            count: 1
- #            capabilities: [gpu]
+  tf-server:
+    build: 
+      context: .
+      dockerfile: Dockerfile.TFServing
+    container_name: dart-api-tf-server
+    links:
+      - backend:backend
+    ports:
+      - "8500:8500"
+      - "8501:8501"
+    networks:
+      - dart-api-network
+    volumes:
+      - type: bind
+        source: /home/ross/Documents/app_data
+        target: /app_data
+        read_only: false
+    #environment:
+    #  MODEL_NAME: efficientdet-d0
+    #  OMP_NUM_THREADS: 4                          # replace by the number of cores
+    #  TENSORFLOW_INTER_OP_PARALLELISM: 2
+    #  TENSORFLOW_INTRA_OP_PARALLELISM: 4          # replace by the number of cores
+    command: 
+      - --model_config_file=/app/tf_server/configs/models.config
+      - --rest_api_timeout_in_ms=120000
+    # - --batching_parameters_file=/app/core/batching.config
+    # - --enable_batching 
+    # attach GPU support here
+    #deploy:
+    #  resources:
+    #    reservations
+    #      devices:
+    #        - driver: nvidia
+    #          count: 1
+    #          capabilities: [gpu]
   
   flower:
     image: mher/flower:0.9.7
