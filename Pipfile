@@ -9,6 +9,7 @@ celery = "*"
 redis = "*"
 flower = "*"
 pandas = "*"
+aiofiles = "*"
 
 [dev-packages]
 flake8 = "*"

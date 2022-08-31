@@ -2,7 +2,7 @@
 pre-/post-processing of both georeferenced and non-georeferenced object detection
 results."""
 
-from os import environ, mkdir, listdir
+from os import getenv, listdir, mkdir
 from os.path import join, exists
 import math
 import json
@@ -18,29 +18,51 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-tf_serving_url = environ("TF_SERVING_URL")
+tf_serving_url = getenv(
+    "TF_SERVING_URL", "http://tensorflow-worker:8501/v1/models/efficientdet-d0:predict"
+)
 
 
-def setup_objdetect_project(image_path):
-    """Set up processing and results sub-directories"""
-    processing_directory = join(image_path, "processing")
-    if not exists(processing_directory):
-        mkdir(processing_directory)
+def prep_objdetect_project(task_path):
+    """A simple function designed to create the necessary directories for API
+    object detection processing and results.
 
-    results_directory = join(image_path, "inference_results")
-    if not exists(results_directory):
-        mkdir(results_directory)
+    Parameters:
+    - task_path: A path-like object where the object detection tasks' project subdirs
+        will be created.
 
-    plot_directory = join(results_directory, "inference_plots")
-    if not exists(plot_directory):
-        mkdir(plot_directory)
+    Returns:
+    - task_paths: A dictionary representing all of our project's paths. This is
+        intended to be passed to the API's object detection task.
 
-    tab_directory = join(results_directory, "tabular_results")
-    if not exists(tab_directory):
-        mkdir(tab_directory)
+    """
+    # Create an API intermediate processing file directory
+    tmp_path = join(task_path, "tmp")
+    if not exists(tmp_path):
+        mkdir(tmp_path)
 
-    return processing_directory, results_directory, plot_directory, tab_directory
+    # Create a results directory
+    results_path = join(task_path, "api_results")
+    if not exists(results_path):
+        mkdir(results_path)
 
+    # Create results sub-directories
+    per_plots_path = join(results_path, "per_image_plots")
+    if not exists(per_plots_path):
+        mkdir(per_plots_path)
+
+    per_results_path = join(results_path, "per_image_results")
+    if not exists(per_results_path):
+        mkdir(per_results_path)
+
+    task_paths = {
+        'tmp_path': tmp_path,
+        'results_path': results_path,
+        'per_plots_path': per_plots_path,
+        'per_results_path': per_results_path,
+    }
+
+    return task_paths
 
 def ndv_check(chip: np.ndarray, verbose=False) -> bool:
     """This function checks to see if the chip is potentially composed of all NDV values
@@ -91,10 +113,7 @@ def ndv_check(chip: np.ndarray, verbose=False) -> bool:
 
 
 def chip_geo_image(
-    image: np.ndarray,
-    kernel_size: tuple,
-    nodata_value=0,
-    thin_nodata_chips=False,
+    image: np.ndarray, kernel_size: tuple, nodata_value=0, thin_nodata_chips=False,
     on_disk_path="None",
 ) -> tuple:
     """This is an ultra-fast, full-featured chipping function adapted from this article:
@@ -457,31 +476,30 @@ async def batch_inference(instances, conf_threshold=0.3, concurrency=1):
 
 
 def calc_max_gsd(
-    flight_agl_meters,
-    sensor_focal_length_mm,
-    image_height,
-    image_width,
-    sensor_height_cm,
-    sensor_width_cm,
+    flight_agl_meters, image_height, image_width, sensor_params
 ):
     """A simple function that esitmates the ground spacing distance (GSD) of
     non-georeferenced aerial photographs. Both the GSD in the Y and X dimensions
     are computed, and the max is returned from those.
-    Inputs:
+
+    Parameters:
     - flight_agl_meters: a float (decimal) or integer value representing the sensor's
         height above ground level (AGL) at the time of image acquisition. Units are
         required to be meters.
-    - sensor_focal_length_mm: A string, float, or integer value representing the
-        sensor's focal length in millimeters.
     - image_height, image_width: Integer values representing the height and width of the
         image in pixels
-    - sensor_height_cm, sensor_width_cm: The height and width of the sensor in
-        centimeters.
+    - sensor_params: a dictionary containing the sensor parameters for the current
+        image. The dictionary should the sensor name as key. The value should be the
+        focal length (mm), sensor height (cm) and sensor width (cm) in a list.
+
     Returns:
     - max_gsd: An float value reprenting the maximum GSD of the image in meters.
     """
+    sensor_focal_length_mm = float(sensor_params[0])
+    sensor_height_cm = float(sensor_params[1])
+    sensor_width_cm = float(sensor_params[2])
+
     flight_agl_cm = flight_agl_meters * 1000
-    sensor_focal_length_mm = float(sensor_focal_length_mm)
 
     gsd_h = (flight_agl_cm * sensor_height_cm) / (sensor_focal_length_mm * image_height)
     gsd_w = (flight_agl_cm * sensor_width_cm) / (sensor_focal_length_mm * image_width)
@@ -553,6 +571,50 @@ def _denormalize_coordinates(bbox, im_height, im_width):
     print(f"norm: {bbox}, denorm {px_coords}")
 
     return px_coords
+
+
+def read_tf_label_map(label_map_path):
+    """Reads a Tensorflow Object Detection API label map from a pbtxt file without
+    the need for TF/protobuf libraries. Returns a simple mapping of class_id (int)
+    to class_name (string) in a Python dictionary.
+
+    NOTE: This function is strictly dependent on TF's label map format, (the 'item',
+        'id:' and 'name:' fields are hardcoded).
+
+    All credit to the original author:
+      https://stackoverflow.com/questions/55218726/how-to-open-pbtxt-file
+
+    INPUTS:
+      - label_map_path: The path to the label map .pbtxt file.
+
+    OUTPUTS:
+      - A Python dictionary with class_id:class_name mappings of types
+        (int:string)
+    """
+
+    item_id = None
+    item_name = None
+    items = {}
+
+    print(label_map_path)
+    with open(label_map_path, "r") as label_map_file:
+        for line in label_map_file:
+            line.replace(" ", "")
+            if line == "item{":
+                pass
+            elif line == "}":
+                pass
+            elif "id:" in line:
+                item_id = int(line.split(":", 1)[1].strip())
+            elif "name:" in line:
+                item_name = line.split(":", 1)[1].replace("'", "").strip()
+
+            if item_id is not None and item_name is not None:
+                items[item_id] = item_name
+                item_id = None
+                item_name = None
+
+    return items
 
 
 def results_dict_to_dataframe(image_name, orig_results, label_map):

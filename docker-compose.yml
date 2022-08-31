@@ -12,8 +12,8 @@ services:
 
   client:
     build:
-      context: ./docker/Local
-      dockerfile: Dockerfile.Client
+      context: .
+      dockerfile: docker/Local/Dockerfile.Client
     container_name: dart-api-client
     links:
       - backend:backend
@@ -39,8 +39,8 @@ services:
 
   geoprocessor:
     build:
-      context: ./docker/Local
-      dockerfile: Dockerfile.Geoprocessor
+      context: .
+      dockerfile: docker/Local/Dockerfile.Geoprocessor
     container_name: dart-api-geoprocessor
     links:
       - backend:backend
@@ -69,8 +69,8 @@ services:
   # worker is an unoptimized CPU worker.
   tf-server:
     build:
-      context: ./docker/Local
-      dockerfile: Dockerfile.TFServing
+      context: .
+      dockerfile: docker/Local/Dockerfile.TFServing
     container_name: dart-api-tf-server
     links:
       - backend:backend

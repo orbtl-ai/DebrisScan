@@ -1,8 +1,7 @@
 """ This module spins up the main Gradio/FastAPI web app."""
 
-from os import makedirs, listdir
+from os import mkdir
 from os.path import join
-from shutil import copy
 import json
 import uuid
 
@@ -12,65 +11,93 @@ from celery.result import AsyncResult
 from fastapi.responses import JSONResponse, FileResponse
 import gradio as gr
 
+from app.client.client_utils import (
+    security_checkpoint,
+    async_file_save,
+    dump_user_submission_to_json,
+    prep_sensor_params,
+)
 from geoprocessor.tasks import celery_app
 from configs.api_config import api_configs
 
-# Load API's configuration settings
-sensor_parameters = api_configs.sensor_parameters
-app_data = api_configs.app_data
+# Load some API configs
+with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
+    supported_sensors = json.load(f)
+
+label_map_path = api_configs.LABEL_MAP_PBTXT
+
+color_map_path = api_configs.COLOR_MAP_JSON
 
 
-def object_detection(aerial_images, skip_resampling, flight_agl, sensor_platform):
+async def async_object_detection(
+    aerial_images, skip_resampling, flight_agl, sensor_platform, confidence_threshold
+):
     """
-    Takes a user-submission, returns a task-id, and kicks off a Celery worker.
+    Takes a user-submission, verifies it, returns a task-id,
+    and kicks off a Celery worker.
     """
     # Create a unique task id
     task_id = str(uuid.uuid4())
 
-    # Create a directory to store task data
-    task_dir = join(app_data, task_id)
-    makedirs(task_dir)
-
-    # Save the user image uploads
-    for im in aerial_images:
-        basename = im.name.split("/")[-1]
-        copy(im.name, join(task_dir, basename))
-
-    # Save the user parameters
-    user_sub = {
-        "number_of_images": str(len(aerial_images)),
-        "skip_resampling": str(skip_resampling),
-        "flight_agl": str(flight_agl),
-        "sensor_platform": str(sensor_platform),
-    }
-
-    json_path = join(task_dir, "user_submission.json")
-    with open(json_path, "w") as f:
-        json.dump(user_sub, f, indent=1)
-
-    # Kick off the Celery worker
-    # TODO: clean this up and implement a proper security_checkpoint()
-    # that runs async and doesn't clog this funciton.
-    folder_path = join(task_dir)
-
-    accepted_uploads = [
-        join(folder_path, f)
-        for f in listdir(folder_path)
-        if f.endswith(".jpg") or f.endswith(".png") or f.endswith(".tif")
-    ]
-
-    # TODO: build a function to handle this, probably in Celery
-    camera_params = sensor_parameters[sensor_platform]
-
-    celery_app.send_task(
-        "object_detection",
-        args=[folder_path, accepted_uploads, camera_params],
-        task_id=task_id,
+    # Security check
+    security_report = security_checkpoint(
+        task_id, aerial_images, api_configs.APPROVED_IMAGE_TYPE
     )
 
-    print(f"Task {task_id} created")
+    # NOTE: the api is currently strict on security, if a single file upload fails the
+    # security_checkpoint() then the entire submission is rejected.
+    if security_report['REJECTED_UPLOADS'] > 0:
+        print(f"Security report failed! Task {task_id} was rejected.")
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status": "ERROR!",
+                "task-id": task_id,
+                "error": f"The API has rejected your upload for the following \
+                    reasons: {security_report['REJECTED_UPLOADS']}. Please check your \
+                    upload and try again.",
+            },
+        )
+    else:
+        # Set up a task directory and save files
+        task_path = join(api_configs.APP_DATA, str(task_id))
+        mkdir(task_path)
 
-    return task_id
+        # Save the user-submitted images to the processing directory
+        await async_file_save(task_id, aerial_images, task_path)
+
+        # extract neccecary parameters from the json file
+        sensor_params = prep_sensor_params(supported_sensors, sensor_platform)
+
+        # save task metadata (user selections, key API config options, etc.)
+        dump_user_submission_to_json(
+            aerial_images, skip_resampling, flight_agl, sensor_platform,
+            sensor_params[sensor_platform], confidence_threshold,
+            api_configs.TARGET_GSD_CM, task_path
+        )
+
+        # kick-off the heavy processing with Celery...
+        celery_app.send_task(
+            "object_detection",
+            args=[
+                task_path, security_report['ACCEPTED_IMAGES'], sensor_platform,
+                sensor_params, color_map_path, label_map_path
+            ],
+            task_id=task_id,
+        )
+
+        print(f"Task {task_id} has been sent to Celery!")
+
+    return JSONResponse(
+            status_code=200,
+            content={
+                "status": "Upload Successful!",
+                "task-id": task_id,
+                "error": "NONE. Please check the status of your task at the Task \
+                    Status page using your task-id. When your task succeeds retrieve \
+                    the results at the Task Results page..",
+            },
+        )
 
 
 async def get_task_status(task_id):
@@ -139,13 +166,20 @@ with gr.Blocks() as demo:
             )
             in_sensor_platform = gr.Dropdown(
                 label="Sensor Platform",
-                choices=list(sensor_parameters.keys()),
+                choices=list(supported_sensors.keys()),
+            )
+            confidence_threshold = gr.Slider(
+                label="Confidence Threshold",
+                minimum=0.0,
+                maximum=1.0,
+                value=api_configs.confidence_threshold,
+                step=0.1,
             )
             submit_button = gr.Button(value="Submit Object Detection Job")
             out_task_id = gr.Text(label="Task ID")
 
         submit_button.click(
-            object_detection,
+            async_object_detection,
             inputs=[
                 in_aerial_images,
                 in_skip_resampling,
@@ -162,4 +196,7 @@ with gr.Blocks() as demo:
         status_button.click(get_task_status, inputs=[in_task_id], outputs=[out_status])
 
 # gr.close_all()
+
+# conc_count: "Number of worker threads that will be processing requests concurrently."
+demo.queue(concurrency_count=1)
 demo.launch(server_name="0.0.0.0", debug=True)

@@ -9,7 +9,7 @@ from PIL import Image
 
 from celery import Celery
 
-from utils.object_detection import (
+from geoprocessor.utils.object_detection import (
     setup_objdetect_project,
     calc_max_gsd,
     resize_to_gsd,
@@ -21,8 +21,13 @@ from utils.object_detection import (
     collate_per_image_results,
 )
 
+
 print("=== TASKS.PY ===")
-print(f'CELERY_CONFIG_MODULE: {getenv("CELERY_CONFIG_MODULE")}')
+
+celery_config_module = getenv(
+    "CELERY_CONFIG_MODULE", "geoprocessor.configs.celery_config"
+)
+print(f"CELERY_CONFIG_MODULE: {celery_config_module}")
 
 celery_app = Celery()
 celery_app.config_from_envvar("CELERY_CONFIG_MODULE")
@@ -30,11 +35,12 @@ celery_app.config_from_envvar("CELERY_CONFIG_MODULE")
 
 
 @celery_app.task(name="object_detection")  # Named task
-def non_georef_object_detection(
-    image_path,
+def object_detection(
+    task_folder,
     images_to_process,
+    sensor_name,
     sensor_params,
-    color_scheme,
+    color_map_path,
     label_map_path,
 ):
     """
@@ -52,18 +58,16 @@ def non_georef_object_detection(
     """
 
     # Prep project folder, load user-submitted parameters
-    (processing_directory, plot_directory, tab_directory) = setup_objdetect_project(
-        image_path
-    )
+    task_paths = setup_objdetect_project(task_folder)
 
-    with open(f"{image_path}/user_submission.json", "rb") as sub:
+    with open(join(task_folder, "user_submission.json"), "rb") as sub:
         user_sub = json.load(sub)
 
     # Begin inference on images...
     for current_image in images_to_process:
         print(f"Processing: {current_image}")
 
-        i_path = join(image_path, current_image)
+        i_path = join(task_folder, current_image)
         i_basename, i_ext = splitext(current_image)
 
         # Resample the image if needed
@@ -76,20 +80,11 @@ def non_georef_object_detection(
 
                 image_height, image_width = in_image.size
 
-                (focal_length_mm, sensor_height_cm, sensor_width_cm) = sensor_params[
-                    user_sub["sensor_platform"]
-                ]
-                # print(f"Focal length: {focal_length_mm}, \
-                #     Sensor height: {sensor_height_cm}, \
-                #     Sensor width: {sensor_width_cm}")
-
                 max_gsd = calc_max_gsd(
                     user_sub["flight_AGL"],
-                    focal_length_mm,
                     image_height,
                     image_width,
-                    sensor_height_cm,
-                    sensor_width_cm,
+                    list(user_sub["api_sensor_params"])
                 )
 
                 print(
@@ -99,11 +94,11 @@ def non_georef_object_detection(
                 )
 
                 processed_image = resize_to_gsd(
-                    in_image, max_gsd, user_sub["target_gsd_cm"]
+                    in_image, max_gsd, user_sub["api_target_gsd"]
                 )
 
                 resampled_path = join(
-                    processing_directory, f"{i_basename}_resample{i_ext}"
+                    task_paths['tmp_path'], f"{i_basename}_resample{i_ext}"
                 )
                 processed_image.save(resampled_path)
                 print(
