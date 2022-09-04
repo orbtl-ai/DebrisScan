@@ -14,6 +14,8 @@ services:
     build:
       context: .
       dockerfile: docker/Local/Dockerfile.Client
+      args:
+        - APP_DATA=${DOCKER_APP_DATA}
     container_name: dart-api-client
     links:
       - backend:backend
@@ -41,6 +43,8 @@ services:
     build:
       context: .
       dockerfile: docker/Local/Dockerfile.Geoprocessor
+      args:
+        - APP_DATA=${DOCKER_APP_DATA}
     container_name: dart-api-geoprocessor
     links:
       - backend:backend
@@ -58,9 +62,9 @@ services:
         read_only: true
     env_file:
       - .env.dev
-    command: celery -A geoprocessor.tasks.celery_app worker --loglevel=info --concurrency=1 --uid=nobody --gid=nogroup
-    #command: ["sh", "/app/geoprocessor/celery.sh"]
-    #entrypoint: /app/geoprocessor/entrypoint.sh
+    #command: celery -A geoprocessor.tasks.celery_app worker --loglevel=info --concurrency=1 --uid=nobody --gid=nogroup
+    command: ["sh", "/app/geoprocessor/celery_entrypoint.sh"]
+    #entrypoint: /app/geoprocessor/celery_entrypoint.sh
     depends_on:
       - backend
       - client

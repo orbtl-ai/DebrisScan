@@ -6,10 +6,6 @@ class BaseConfig:
     Base API configuration for local development.
     """
 
-    """Specify a local directory to store the task data when running locally (string).
-    """
-    APP_DATA = "/home/ross/Documents/gradio-app-data"
-
     """Specify a list of approved image file types (list of strings).
     """
     APPROVED_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'tif', 'tiff']

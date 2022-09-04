@@ -1,6 +1,7 @@
 """This module contains the API client's utility functions."""
 
-from os.path import join
+from os.path import join, splitext, exists
+from os import mkdir
 import json
 
 import aiofiles
@@ -36,15 +37,16 @@ def security_checkpoint(
     rejected_uploads = {}
     accepted_images = []
     for upload in file_uploads:
-        print(upload.content_type)
-        if upload.content_type not in approved_content_types:
+        target_basename, target_ext = splitext(upload.orig_name)
+        print(target_basename, target_ext)
+        if target_ext.strip(".").lower() not in approved_content_types:
             num_rejected_uploads += 1
-            rejected_uploads[upload.filename] = "UNAPPROVED_FILE_TYPE"
+            rejected_uploads[upload.orig_name] = "UNAPPROVED_FILE_TYPE"
             # add detailed output to logfile?
-            print(f"File upload {upload.filename} will not be processed because \
+            print(f"File upload {upload.orig_name} will not be processed because \
                 content is not an approved file type ({approved_content_types})")
         else:
-            accepted_images.append(upload.filename)
+            accepted_images.append(upload.orig_name)
 
     security_dict = {
         "task-id": task_id,
@@ -55,14 +57,55 @@ def security_checkpoint(
 
     return security_dict
 
+def prep_project(task_path):
+    """A simple function designed to create the necessary directories for API
+    object detection processing and results.
 
-async def async_file_save(task_id, list_of_files, dest):
+    Parameters:
+    - task_path: A path-like object where the object detection tasks' project subdirs
+        will be created.
+
+    Returns:
+    - task_paths: A dictionary representing all of our project's paths. This is
+        intended to be passed to the API's object detection task.
+
+    """
+    # Create an directory to store the API's intermediate processing files.
+    tmp_path = join(task_path, "tmp")
+    if not exists(tmp_path):
+        mkdir(tmp_path)
+
+    # Create a directory to store final results along with two sub-directories. One
+    # for per-image plots, another for per-image tabular results (such as CSV and
+    # JSON files).
+    results_path = join(task_path, "api_results")
+    if not exists(results_path):
+        mkdir(results_path)
+
+    per_plots_path = join(results_path, "per_image_plots")
+    if not exists(per_plots_path):
+        mkdir(per_plots_path)
+
+    per_results_path = join(results_path, "per_image_results")
+    if not exists(per_results_path):
+        mkdir(per_results_path)
+
+    task_paths = {
+        'tmp_path': tmp_path,
+        'results_path': results_path,
+        'per_plots_path': per_plots_path,
+        'per_results_path': per_results_path,
+    }
+
+    return task_paths
+
+async def async_file_save(task_id, file_uploads, dest):
     """A simple function designed to save a list of files to a destination
     asynchronously.
 
     Inputs:
     - task_id: A string representing the task_id of the current task.
-    - list_of_files: A list of UploadFile objects from the FastAPI request.
+    - file_uploads: A list of UploadFile objects from the FastAPI request.
     - dest: A string representing the destination path to save the files to.
 
     Returns:
@@ -72,18 +115,45 @@ async def async_file_save(task_id, list_of_files, dest):
         return result.
     """
     saved_images = 0
-    for target_file in list_of_files:
-        image_path = join(dest, target_file.filename)
-        async with aiofiles.open(image_path, "wb") as to_write:
-            await to_write.write(
-                await target_file.read(1200000000)
-            )  # async read, async write, 1.2 GB upload limit per image to start
-        saved_images += 1
-
-    print(f"{task_id}: Saved {saved_images} of {len(list_of_files)} images.")
+    #for upload in file_uploads:
+    #    image_path = join(dest, upload.orig_name)
+    #    async with aiofiles.open(image_path, "wb") as to_write:
+    #        await to_write.write(
+    #            await upload.read(1200000000)
+    #        )  # async read, async write, 1.2 GB upload limit per image to start
+    #    saved_images += 1
+#
+    #print(f"{task_id}: Saved {saved_images} of {len(file_uploads)} images.")
 
     return None
 
+#def nonasync_file_save(task_id, file_uploads, dest):
+#    """A simple function designed to save a list of files to a destination
+#    asynchronously.
+#
+#    Inputs:
+#    - task_id: A string representing the task_id of the current task.
+#    - file_uploads: A list of UploadFile objects from the FastAPI request.
+#    - dest: A string representing the destination path to save the files to.
+#
+#    Returns:
+#    - None
+#
+#    TODO: Add error handling for if the destination directory does not exist,
+#        return result.
+#    """
+#    saved_images = 0
+#    for upload in file_uploads:
+#        image_path = join(dest, upload.orig_name)
+#        async with aiofiles.open(image_path, "wb") as to_write:
+#            await to_write.write(
+#                await upload.read(1200000000)
+#            )  # async read, async write, 1.2 GB upload limit per image to start
+#        saved_images += 1
+#
+#    print(f"{task_id}: Saved {saved_images} of {len(file_uploads)} images.")
+#
+#    return None
 
 def dump_user_submission_to_json(
     aerial_images, skip_resampling, flight_agl, sensor_platform, sensor_params,
@@ -103,7 +173,7 @@ def dump_user_submission_to_json(
 
     user_sub = {
         "number_of_images": str(len(aerial_images)),
-        "skip_resampling": str(skip_resampling),
+        "skip_optional_resampling": str(skip_resampling),
         "flight_agl": str(flight_agl),
         "sensor_platform": str(sensor_platform),
         "api_sensor_params": str(sensor_params),

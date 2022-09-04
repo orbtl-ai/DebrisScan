@@ -1,10 +1,9 @@
 celery[redis]
+aiofiles
+python-multipart
+aiohttp
 rasterio
 shapely
 geopandas
 fiona
 pillow
-aiofiles
-python-multipart
-aiohttp
-python-dotenv

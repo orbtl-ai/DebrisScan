@@ -36,17 +36,18 @@ def prep_objdetect_project(task_path):
         intended to be passed to the API's object detection task.
 
     """
-    # Create an API intermediate processing file directory
+    # Create an directory to store the API's intermediate processing files.
     tmp_path = join(task_path, "tmp")
     if not exists(tmp_path):
         mkdir(tmp_path)
 
-    # Create a results directory
+    # Create a directory to store final results along with two sub-directories. One
+    # for per-image plots, another for per-image tabular results (such as CSV and
+    # JSON files).
     results_path = join(task_path, "api_results")
     if not exists(results_path):
         mkdir(results_path)
 
-    # Create results sub-directories
     per_plots_path = join(results_path, "per_image_plots")
     if not exists(per_plots_path):
         mkdir(per_plots_path)
@@ -63,6 +64,7 @@ def prep_objdetect_project(task_path):
     }
 
     return task_paths
+
 
 def ndv_check(chip: np.ndarray, verbose=False) -> bool:
     """This function checks to see if the chip is potentially composed of all NDV values
@@ -733,6 +735,7 @@ def collate_per_image_results(in_dir):
     tally each debris type and the cumulative sum of all debris types, which
     is written as the final row of a final_counts dataframe (for writing to
     CSV).
+
     TODO: Bundle JSONS?
     Inputs:
     - in_dir: A string representing the path to the directory containing the

@@ -1,6 +1,6 @@
 """ This module spins up the main Gradio/FastAPI web app."""
 
-from os import mkdir
+from os import getenv, mkdir
 from os.path import join
 import json
 import uuid
@@ -11,7 +11,7 @@ from celery.result import AsyncResult
 from fastapi.responses import JSONResponse, FileResponse
 import gradio as gr
 
-from app.client.client_utils import (
+from client.client_utils import (
     security_checkpoint,
     async_file_save,
     dump_user_submission_to_json,
@@ -21,6 +21,9 @@ from geoprocessor.tasks import celery_app
 from configs.api_config import api_configs
 
 # Load some API configs
+
+APP_DATA = getenv("DOCKER_APP_DATA", "/app-data")
+
 with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
     supported_sensors = json.load(f)
 
@@ -29,7 +32,7 @@ label_map_path = api_configs.LABEL_MAP_PBTXT
 color_map_path = api_configs.COLOR_MAP_JSON
 
 
-async def async_object_detection(
+def async_object_detection(
     aerial_images, skip_resampling, flight_agl, sensor_platform, confidence_threshold
 ):
     """
@@ -39,14 +42,15 @@ async def async_object_detection(
     # Create a unique task id
     task_id = str(uuid.uuid4())
 
+
     # Security check
     security_report = security_checkpoint(
-        task_id, aerial_images, api_configs.APPROVED_IMAGE_TYPE
+        task_id, aerial_images, api_configs.APPROVED_IMAGE_TYPES
     )
 
     # NOTE: the api is currently strict on security, if a single file upload fails the
     # security_checkpoint() then the entire submission is rejected.
-    if security_report['REJECTED_UPLOADS'] > 0:
+    if int(security_report['NUM_REJECTED_UPLOADS']) > 0:
         print(f"Security report failed! Task {task_id} was rejected.")
         return JSONResponse(
             status_code=400,
@@ -64,7 +68,7 @@ async def async_object_detection(
         mkdir(task_path)
 
         # Save the user-submitted images to the processing directory
-        await async_file_save(task_id, aerial_images, task_path)
+        async_file_save(task_id, aerial_images, task_path)
 
         # extract neccecary parameters from the json file
         sensor_params = prep_sensor_params(supported_sensors, sensor_platform)
@@ -72,7 +76,7 @@ async def async_object_detection(
         # save task metadata (user selections, key API config options, etc.)
         dump_user_submission_to_json(
             aerial_images, skip_resampling, flight_agl, sensor_platform,
-            sensor_params[sensor_platform], confidence_threshold,
+            sensor_params, confidence_threshold,
             api_configs.TARGET_GSD_CM, task_path
         )
 
@@ -172,12 +176,12 @@ with gr.Blocks() as demo:
                 label="Confidence Threshold",
                 minimum=0.0,
                 maximum=1.0,
-                value=api_configs.confidence_threshold,
+                value=api_configs.CONFIDENCE_THRESHOLD,
                 step=0.1,
             )
             submit_button = gr.Button(value="Submit Object Detection Job")
-            out_task_id = gr.Text(label="Task ID")
-
+            #out_task_id = gr.Text(label="Task ID")
+            out_json = gr.JSON(label="JSON Results")
         submit_button.click(
             async_object_detection,
             inputs=[
@@ -185,8 +189,10 @@ with gr.Blocks() as demo:
                 in_skip_resampling,
                 in_flight_agl,
                 in_sensor_platform,
+                confidence_threshold,
             ],
-            outputs=[out_task_id],
+            #outputs=[out_task_id],
+            outputs=[out_json],
         )
     with gr.Tabs():
         with gr.TabItem("Job Status"):
@@ -198,5 +204,5 @@ with gr.Blocks() as demo:
 # gr.close_all()
 
 # conc_count: "Number of worker threads that will be processing requests concurrently."
-demo.queue(concurrency_count=1)
+#demo.queue(concurrency_count=2)
 demo.launch(server_name="0.0.0.0", debug=True)

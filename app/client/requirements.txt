@@ -1,3 +1,5 @@
-gradio
 celery[redis]
-python-dotenv
+aiofiles
+python-multipart
+aiohttp
+gradio
