@@ -13,16 +13,18 @@ import gradio as gr
 
 from client.client_utils import (
     security_checkpoint,
-    async_file_save,
+    nonasync_file_save,
+    #async_file_save,
     dump_user_submission_to_json,
     prep_sensor_params,
 )
 from geoprocessor.tasks import celery_app
-from configs.api_config import api_configs
+from client.configs.api_config import api_configs
 
 # Load some API configs
 
-APP_DATA = getenv("DOCKER_APP_DATA", "/app-data")
+# NOTE: for the time being this is falling back on the default set here...
+APP_DATA = getenv("DOCKER_APP_DATA", "/app_data")
 
 with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
     supported_sensors = json.load(f)
@@ -41,7 +43,6 @@ def async_object_detection(
     """
     # Create a unique task id
     task_id = str(uuid.uuid4())
-
 
     # Security check
     security_report = security_checkpoint(
@@ -64,11 +65,12 @@ def async_object_detection(
         )
     else:
         # Set up a task directory and save files
-        task_path = join(api_configs.APP_DATA, str(task_id))
+        task_path = join(APP_DATA, str(task_id))
         mkdir(task_path)
 
         # Save the user-submitted images to the processing directory
-        async_file_save(task_id, aerial_images, task_path)
+        nonasync_file_save(task_id, aerial_images, task_path)
+        #async_file_save(task_id, aerial_images, task_path)
 
         # extract neccecary parameters from the json file
         sensor_params = prep_sensor_params(supported_sensors, sensor_platform)
@@ -77,7 +79,8 @@ def async_object_detection(
         dump_user_submission_to_json(
             aerial_images, skip_resampling, flight_agl, sensor_platform,
             sensor_params, confidence_threshold,
-            api_configs.TARGET_GSD_CM, task_path
+            api_configs.TARGET_GSD_CM, api_configs.CHIP_SIZE,
+            task_path
         )
 
         # kick-off the heavy processing with Celery...
@@ -171,6 +174,7 @@ with gr.Blocks() as demo:
             in_sensor_platform = gr.Dropdown(
                 label="Sensor Platform",
                 choices=list(supported_sensors.keys()),
+                value=list(supported_sensors.keys())[0],
             )
             confidence_threshold = gr.Slider(
                 label="Confidence Threshold",
@@ -205,4 +209,4 @@ with gr.Blocks() as demo:
 
 # conc_count: "Number of worker threads that will be processing requests concurrently."
 #demo.queue(concurrency_count=2)
-demo.launch(server_name="0.0.0.0", debug=True)
+demo.launch(server_name="0.0.0.0", server_port=8080, debug=True)

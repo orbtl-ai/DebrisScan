@@ -1,10 +1,13 @@
 """This module contains the API client's utility functions."""
 
 from os.path import join, splitext, exists
-from os import mkdir
+from os import mkdir, remove
+from shutil import copy
 import json
 
-import aiofiles
+from PIL import Image
+
+#import aiofiles
 
 
 def security_checkpoint(
@@ -57,6 +60,7 @@ def security_checkpoint(
 
     return security_dict
 
+
 def prep_project(task_path):
     """A simple function designed to create the necessary directories for API
     object detection processing and results.
@@ -99,35 +103,8 @@ def prep_project(task_path):
 
     return task_paths
 
-async def async_file_save(task_id, file_uploads, dest):
-    """A simple function designed to save a list of files to a destination
-    asynchronously.
 
-    Inputs:
-    - task_id: A string representing the task_id of the current task.
-    - file_uploads: A list of UploadFile objects from the FastAPI request.
-    - dest: A string representing the destination path to save the files to.
-
-    Returns:
-    - None
-
-    TODO: Add error handling for if the destination directory does not exist,
-        return result.
-    """
-    saved_images = 0
-    #for upload in file_uploads:
-    #    image_path = join(dest, upload.orig_name)
-    #    async with aiofiles.open(image_path, "wb") as to_write:
-    #        await to_write.write(
-    #            await upload.read(1200000000)
-    #        )  # async read, async write, 1.2 GB upload limit per image to start
-    #    saved_images += 1
-#
-    #print(f"{task_id}: Saved {saved_images} of {len(file_uploads)} images.")
-
-    return None
-
-#def nonasync_file_save(task_id, file_uploads, dest):
+#async def async_file_save(task_id, file_uploads, dest):
 #    """A simple function designed to save a list of files to a destination
 #    asynchronously.
 #
@@ -155,9 +132,37 @@ async def async_file_save(task_id, file_uploads, dest):
 #
 #    return None
 
+def nonasync_file_save(task_id, file_uploads, dest):
+    """A simple function designed to save a list of files to a destination.
+
+    Inputs:
+    - task_id: A string representing the task_id of the current task.
+    - file_uploads: A list of UploadFile objects from the FastAPI request.
+    - dest: A string representing the destination path to save the files to.
+
+    Returns:
+    - None
+
+    TODO: Add error handling for if the destination directory does not exist,
+        return result.
+    """
+
+    print(type(file_uploads[0].name), file_uploads[0].name)
+    saved_images = 0
+    for upload in file_uploads:
+        image_path = join(dest, upload.orig_name)
+        with Image.open(upload.name) as tmp_img:
+            tmp_img.save(image_path)
+
+        saved_images += 1
+
+    print(f"{task_id}: Saved {saved_images} of {len(file_uploads)} images.")
+
+    return None
+
 def dump_user_submission_to_json(
     aerial_images, skip_resampling, flight_agl, sensor_platform, sensor_params,
-    confidence_threshold, target_gsd, output_path
+    confidence_threshold, target_gsd, chip_size, output_path
 ):
     """A simple function designed to a list of user submission parameters, make a pretty
     dictionary, and dump it to a JSON file.
@@ -178,6 +183,7 @@ def dump_user_submission_to_json(
         "sensor_platform": str(sensor_platform),
         "api_sensor_params": str(sensor_params),
         "api_target_gsd": str(target_gsd),
+        "chip_size": str(chip_size),
         "confidence_threshold": str(confidence_threshold),
     }
 

@@ -67,6 +67,8 @@ def object_detection(
     with open(join(task_folder, "user_submission.json"), "rb") as sub:
         user_sub = json.load(sub)
 
+    print(user_sub)
+
     # -----------------------------
     # BEGIN INFERENCE ON EACH IMAGE
     # -----------------------------
@@ -79,7 +81,9 @@ def object_detection(
         # ----------------------------------------------------------------
         # IF RESAMPLE=True, THEN CALCULATE GSD AND RESAMPLE THE O.G. IMAGE
         # ----------------------------------------------------------------
+        resampled_path = i_path
         if user_sub["skip_optional_resampling"] is False:
+            print("IF!")
             print(f"Resampling image {current_image}...")
 
             with Image.open(i_path, mode="r") as in_image:
@@ -113,12 +117,6 @@ def object_detection(
                     f"... resampling complete! Image resampled from {in_image.size} \
                     to {processed_image.size}."
                 )
-        # ------------------------------------------
-        # ELIF RESAMPLING=False, THEN USE O.G. IMAGE
-        # ------------------------------------------
-        elif user_sub["skip_optional_resampling"] is True:
-            print(f"User declined resampling of {current_image}.")
-            resampled_path = i_path
 
         # ----------------------------------
         # CHIP LARGE IMAGE FOR TF INFERENCE

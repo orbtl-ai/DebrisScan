@@ -13,14 +13,14 @@ COPY app/geoprocessor/requirements.txt /tmp/requirements.txt
 
 RUN pip install --no-cache-dir \
     -r /tmp/requirements.txt
-#following line is needed after pandas added to geo-requirements.txt
+#NOTE: following line is needed after pandas added to
+#      geo-requirements.txt.
 #RUN pip install --upgrade numpy
 RUN rm -rf /root/.cache/pip/*
 
-#RUN useradd -ms /bin/bash celery
+#NOTE: these are for prod, bind mounting /app_data for local dev does not honor these
+#      settings.
+#RUN mkdir /app_data
+#RUN chown -R nobody:nogroup /app_data
 
 ENV PYTHONPATH "${PYTHONPATH}:/app/"
-
-ARG APP_DATA
-ENV APP_DATA $APP_DATA
-RUN mkdir APP_DATA
