@@ -26,15 +26,21 @@ class BaseConfig:
 
     # Specify the path to a JSON file which contains the API's supported UAV/camera
     # sensor parameters.
-    SUPPORTED_SENSORS_JSON = "/app/client/configs/supported_sensors.json"
+    SUPPORTED_SENSORS_JSON = "/app/configs/supported_sensors.json"
 
     # Specify the path to a Tensorflow PBTXT file which contains a mapping of
     # object class ids (ints) to object class names (strings).
-    LABEL_MAP_PBTXT = "/app/client/configs/md_labelmap_v6_20210810.pbtxt"
+    LABEL_MAP_PBTXT = "/app/configs/md_labelmap_v6_20210810.pbtxt"
 
     # Specify the path to a JSON file which contain a mapping of object
     # class ids (ints) to matplotlib named colors. Color choices:
     # (https://matplotlib.org/stable/gallery/color/named_colors.html)
-    COLOR_MAP_JSON = "/app/client/configs/color_map.json"
+    COLOR_MAP_JSON = "/app/configs/color_map.json"
+
+    # Specify the path to the API's object detection Tensorflow Serving REST API
+    # URL (port 8501). This is most likely going to be relative to the tf-server
+    # container name.
+    TF_SERVING_URL = "http://tf-server:8501/v1/models/efficientdet-d0:predict"
+
 
 api_configs = BaseConfig()

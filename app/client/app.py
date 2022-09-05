@@ -14,24 +14,16 @@ import gradio as gr
 from client.client_utils import (
     security_checkpoint,
     nonasync_file_save,
-    #async_file_save,
+    # async_file_save,
     dump_user_submission_to_json,
-    prep_sensor_params,
 )
 from geoprocessor.tasks import celery_app
-from client.configs.api_config import api_configs
+from configs.api_config import api_configs
 
-# Load some API configs
 
-# NOTE: for the time being this is falling back on the default set here...
 APP_DATA = getenv("DOCKER_APP_DATA", "/app_data")
 
-with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
-    supported_sensors = json.load(f)
-
-label_map_path = api_configs.LABEL_MAP_PBTXT
-
-color_map_path = api_configs.COLOR_MAP_JSON
+supported_sensors = json.load(open(api_configs.SUPPORTED_SENSORS_JSON, "r"))
 
 
 def async_object_detection(
@@ -70,26 +62,18 @@ def async_object_detection(
 
         # Save the user-submitted images to the processing directory
         nonasync_file_save(task_id, aerial_images, task_path)
-        #async_file_save(task_id, aerial_images, task_path)
-
-        # extract neccecary parameters from the json file
-        sensor_params = prep_sensor_params(supported_sensors, sensor_platform)
+        # await async_file_save(task_id, aerial_images, task_path)
 
         # save task metadata (user selections, key API config options, etc.)
         dump_user_submission_to_json(
             aerial_images, skip_resampling, flight_agl, sensor_platform,
-            sensor_params, confidence_threshold,
-            api_configs.TARGET_GSD_CM, api_configs.CHIP_SIZE,
-            task_path
+            confidence_threshold, task_path
         )
 
         # kick-off the heavy processing with Celery...
         celery_app.send_task(
             "object_detection",
-            args=[
-                task_path, security_report['ACCEPTED_IMAGES'], sensor_platform,
-                sensor_params, color_map_path, label_map_path
-            ],
+            args=[task_path, security_report['ACCEPTED_IMAGES']],
             task_id=task_id,
         )
 
@@ -184,7 +168,7 @@ with gr.Blocks() as demo:
                 step=0.1,
             )
             submit_button = gr.Button(value="Submit Object Detection Job")
-            #out_task_id = gr.Text(label="Task ID")
+            # out_task_id = gr.Text(label="Task ID")
             out_json = gr.JSON(label="JSON Results")
         submit_button.click(
             async_object_detection,
@@ -195,7 +179,7 @@ with gr.Blocks() as demo:
                 in_sensor_platform,
                 confidence_threshold,
             ],
-            #outputs=[out_task_id],
+            # outputs=[out_task_id],
             outputs=[out_json],
         )
     with gr.Tabs():
@@ -208,5 +192,5 @@ with gr.Blocks() as demo:
 # gr.close_all()
 
 # conc_count: "Number of worker threads that will be processing requests concurrently."
-#demo.queue(concurrency_count=2)
+# demo.queue(concurrency_count=2)
 demo.launch(server_name="0.0.0.0", server_port=8080, debug=True)

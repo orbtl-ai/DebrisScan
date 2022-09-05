@@ -2,7 +2,7 @@
 pre-/post-processing of both georeferenced and non-georeferenced object detection
 results."""
 
-from os import getenv, listdir, mkdir
+from os import listdir, mkdir
 from os.path import join, exists
 import math
 import json
@@ -17,10 +17,6 @@ import pandas as pd
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-
-tf_serving_url = getenv(
-    "TF_SERVING_URL", "http://tensorflow-worker:8501/v1/models/efficientdet-d0:predict"
-)
 
 
 def prep_objdetect_project(task_path):
@@ -357,7 +353,7 @@ def unchip_geo_image(
     return merged_results_dict
 
 
-async def _async_post(session, url, batch, i, results, conf_threshold=0.0):
+async def _async_post(session, url, batch, i, results, raw_conf_threshold=0.0):
     """An async function for submitting batches of image chips to a TensorFlow
     Serving server using the HTTP POST method.
     This function also employs memory-saving features. Specifically:
@@ -384,6 +380,7 @@ async def _async_post(session, url, batch, i, results, conf_threshold=0.0):
      - NONE (but the results dictionary is updated with each chip's inference results)
     """
 
+    conf_threshold = float(raw_conf_threshold)
     async with session.post(
         url, json={"signature_name": "serving_default", "instances": batch.tolist()}
     ) as resp:
@@ -432,7 +429,7 @@ async def _async_post(session, url, batch, i, results, conf_threshold=0.0):
             print(f"{i}: {pred['error']}")
 
 
-async def batch_inference(instances, conf_threshold=0.3, concurrency=1):
+async def batch_inference(instances, tf_serving_url, conf_threshold, concurrency=1):
     """An async function for performing client-side batch inference on a set of
     image chips.
     Concurrency controls how many image chips are provided to the Tensorflow Server
@@ -475,6 +472,23 @@ async def batch_inference(instances, conf_threshold=0.3, concurrency=1):
         )
 
     return predictions
+
+
+def prep_sensor_params(supported_sensors, selected_sensor):
+    """A simple function designed to load the selected sensor parameters from a JSON
+    file.
+    """
+    sensor_params = (
+            float(supported_sensors[selected_sensor]['focal_length_mm']),
+            float(supported_sensors[selected_sensor]['sensor_height_cm']),
+            float(supported_sensors[selected_sensor]['sensor_width_cm']),
+    )
+
+    return sensor_params
+
+
+def json_keys_to_int(x):
+    return {int(k): v for k, v in x.items()}
 
 
 def calc_max_gsd(
@@ -569,8 +583,8 @@ def _denormalize_coordinates(bbox, im_height, im_width):
     right = int(xmax * im_width)
 
     px_coords = [top, left, bottom, right]
-    print("ymin, xmin, ymax, xmax")
-    print(f"norm: {bbox}, denorm {px_coords}")
+    # print("ymin, xmin, ymax, xmax")
+    # print(f"norm: {bbox}, denorm {px_coords}")
 
     return px_coords
 
@@ -671,7 +685,8 @@ def plot_bboxes_on_image(image_path, labels, color_ramp, class_scheme, thickness
     """A custom function to plot object detection bounding boxes on an image.
     This function is pretty basic. The only motivation to writing this was to
     remove the need for TF Object Detection API's heavy dependencies within the
-    Celery worker.
+    Celery geoprocessor.
+
     Inputs:
     - image_path: A string representing the path to the image to be plotted.
     - labels: A dictionary which contains the keys "bboxes", "scores", and "classes".
@@ -698,8 +713,8 @@ def plot_bboxes_on_image(image_path, labels, color_ramp, class_scheme, thickness
             bbox_class = labels["classes"][i]
             bbox_score = labels["scores"][i]
 
-            bbox_color = color_ramp[str(bbox_class)]
-            bbox_label = class_scheme[str(bbox_class)]
+            bbox_color = color_ramp[bbox_class]
+            bbox_label = class_scheme[bbox_class]
 
             if thickness > 0:
                 draw.rectangle(

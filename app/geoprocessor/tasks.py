@@ -10,9 +10,12 @@ from PIL import Image
 
 from celery import Celery
 
+from configs.api_config import api_configs
 from geoprocessor.utils.object_detection import (
     read_tf_label_map,
     prep_objdetect_project,
+    prep_sensor_params,
+    json_keys_to_int,
     calc_max_gsd,
     resize_to_gsd,
     chip_geo_image,
@@ -23,11 +26,10 @@ from geoprocessor.utils.object_detection import (
     collate_per_image_results,
 )
 
-
 print("=== TASKS.PY ===")
 
 celery_config_module = getenv(
-    "CELERY_CONFIG_MODULE", "geoprocessor.configs.celery_config"
+    "CELERY_CONFIG_MODULE", "configs.celery_config"
 )
 print(f"CELERY_CONFIG_MODULE: {celery_config_module}")
 
@@ -37,26 +39,8 @@ celery_app.config_from_envvar("CELERY_CONFIG_MODULE")
 
 
 @celery_app.task(name="object_detection")  # Named task
-def object_detection(
-    task_folder,
-    images_to_process,
-    sensor_name,
-    sensor_params,
-    color_map_path,
-    label_map_path,
-):
+def object_detection(task_folder, images_to_process):
     """
-    Given a batch of images:
-    1. Resample to target GSD
-    2. Chip image
-    3. Run the object detection
-    4. Un-chip the results
-    5. Format the results:
-        - Image Plots
-        - CSV of detections
-          - corners, centerpoints, size
-        - JSON of detections
-        - Per-class debris counts, cumulative sum, average size
     """
 
     # ------------------------------------------------
@@ -92,11 +76,18 @@ def object_detection(
 
                 image_height, image_width = in_image.size
 
+                # Retrieve sensor params
+                with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
+                    supported_sensors = json.load(f)
+                    sensor_params = prep_sensor_params(
+                        supported_sensors, user_sub["sensor_platform"]
+                    )
+
                 max_gsd = calc_max_gsd(
                     user_sub["flight_AGL"],
                     image_height,
                     image_width,
-                    list(user_sub["api_sensor_params"]),
+                    sensor_params,
                 )
 
                 print(
@@ -125,9 +116,11 @@ def object_detection(
             if in_image.mode != "RGB":
                 in_image = in_image.convert("RGB")
 
+            print(api_configs.CHIP_SIZE)
+
             image_array = np.array(in_image, dtype=np.uint8)
             chip_array, tl_array, meta_dict = chip_geo_image(
-                image_array, kernel_size=user_sub["chip_size"]
+                image_array, api_configs.CHIP_SIZE
             )
 
         # -------------------------
@@ -135,7 +128,9 @@ def object_detection(
         # -------------------------
         start = time.time()  # start the clock
         predictions = asyncio.run(
-            batch_inference(chip_array, user_sub["confidence_threshold"], concurrency=1)
+            batch_inference(
+                chip_array, api_configs.TF_SERVING_URL,
+                user_sub["confidence_threshold"], concurrency=1)
         )
 
         end = time.time()
@@ -160,10 +155,12 @@ def object_detection(
         # -----------------------------
         # PLOT RESULTS ON IMAGES, WRITE
         # -----------------------------
-        with open(color_map_path, "rb") as color_map:
-            color_map_dict = json.load(color_map)
+        with open(api_configs.COLOR_MAP_JSON, "rb") as color_map:
+            color_map_dict = json.load(color_map, object_hook=json_keys_to_int)
+        print(color_map_dict)
 
-        label_map_dict = read_tf_label_map(label_map_path)
+        label_map_dict = read_tf_label_map(api_configs.LABEL_MAP_PBTXT)
+        print(label_map_dict)
 
         image_plot = plot_bboxes_on_image(
             i_path, final_results_dict[i_basename], color_map_dict, label_map_dict
