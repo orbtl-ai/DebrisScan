@@ -154,9 +154,26 @@ def toggle_resampling(choice):
             in_sensor_platform: gr.update(visible=False),
         }
 
-with gr.Blocks() as demo:
-    gr.Markdown("# Welcome to the DebrisScan Demo!")
-    gr.Markdown("This is a **Markdown** description! A really good one!")
+browser_title = "DebrisScan Demo"
+
+demo_title = "# Welcome to the DebrisScan Debris Detection Demo!"
+
+demo_description = """
+    **DebrisScan is an AI-based tool that automatically detects, classifies, and measures
+    shoreline-stranded marine debris from aerial images. This demo allows you to upload
+    your own aerial images (typically taken from a drone or aircraft) to be scanned for
+    marine debris by our cutting-edge AI!**
+"""
+
+demo_article = """
+    DebrisScan was created by [ORBTL AI](https://orbtl.ai) with partnership and funding
+    from [Oregon State University](https://oregonstate.edu/),
+    [NOAA's National Centers for Coastal Ocean Science](https://coastalscience.noaa.gov/),
+    and [NOAA's Marine Debris Program](https://marinedebris.noaa.gov/).
+"""
+with gr.Blocks(title=browser_title) as demo:
+    gr.Markdown(demo_title)
+    gr.Markdown(demo_description)
 
     with gr.Tab("Start Object Detection Task"):
         with gr.Row():
@@ -172,18 +189,20 @@ with gr.Blocks() as demo:
                 with gr.Column():
                     gr.Markdown("### Auto-resample aerial images to 2cm resolution?")
                     gr.Markdown("""
-                        *Resampling will take longer, but it should also improve
-                        detection results by ensuring your aerial images match our
-                        pre-trained models' expected resolution (RECOMMENDED).*
+                        *Resampling requires us to know more about your imagery, but it
+                        should improve your detection results by ensuring your aerial
+                        images match our AI's expectations (they can be a little picky-
+                        HIGHLY RECOMMENDED).*
                         """)
+
                     in_resampling = gr.Checkbox(
                             label=f"Automatically resample aerial images to \
-                                {int(api_configs.TARGET_GSD_CM)}cm resolution?",
+                                {int(api_configs.TARGET_GSD_CM)}cm resolution?\
+                                If so, we will also need to know the images' flight \
+                                altitude and camera parameters.",
                     )
                     in_flight_agl = gr.Slider(
-                        label="Flight AGL (meters)? \
-                            We need to know the height at which the aerial photos \
-                            were taken for auto-resampling.",
+                        label="Flying Height Above Ground Level (meters)",
                         minimum=3,
                         maximum=122,
                         value=76,
@@ -191,9 +210,7 @@ with gr.Blocks() as demo:
                         visible=False,
                     )
                     in_sensor_platform = gr.Dropdown(
-                        label="Sensor Platform? \
-                            We need to know the parameters of the camera that took the \
-                            aerial photos for auto-resampling.",
+                        label="Sensor Platform",
                         choices=list(supported_sensors.keys()),
                         value=list(supported_sensors.keys())[0],
                         visible=False,
@@ -213,7 +230,7 @@ with gr.Blocks() as demo:
                         rate of false positive detections. Conversely, increasing the
                         threshold filters the most uncertain detections, biasing the
                         results towards a higher rate of false negative detections.
-                        (RECOMMENDED VALUE: 30%)*""")
+                        (RECOMMENDED DEFAULT VALUE: 30%)*""")
                     confidence_threshold = gr.Slider(
                         label="Confidence Threshold (%)",
                         minimum=0,
@@ -253,6 +270,8 @@ with gr.Blocks() as demo:
             inputs=[in_task_id],
             outputs=[out_status],
         )
+    gr.Markdown(demo_article)
+
 
 # gr.close_all()
 
