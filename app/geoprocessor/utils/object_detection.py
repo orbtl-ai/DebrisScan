@@ -460,12 +460,14 @@ async def batch_inference(instances, tf_serving_url, conf_threshold, concurrency
     print(f"Number of batches: {num_batches}")
     batches = np.array_split(instances, num_batches)
 
+    conf_thresh_flt = float(conf_threshold / 100)
+
     predictions = {}
     async with aiohttp.ClientSession() as session:
         await asyncio.gather(
             *[
                 _async_post(
-                    session, tf_serving_url, batches[i], i, predictions, conf_threshold
+                    session, tf_serving_url, batches[i], i, predictions, conf_thresh_flt
                 )
                 for i in range(len(batches))
             ]

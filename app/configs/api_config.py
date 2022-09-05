@@ -19,10 +19,10 @@ class BaseConfig:
     CHIP_SIZE = (512, 512)
 
     # Specify the API's default confidence threshold (float). This should range from
-    # 0.0 to 1.0 (0% to 100% confidence). All predicted objects below this threshold
+    # 0 to 100 (0.0 to 1.0 confidence). All predicted objects below this threshold
     # will be dropped from the outputs. Turn this up for a more conservative set of
     # predictions (i.e., lower false positive rate, higher false negative rate).
-    CONFIDENCE_THRESHOLD = 0.3
+    CONFIDENCE_THRESHOLD = 30
 
     # Specify the path to a JSON file which contains the API's supported UAV/camera
     # sensor parameters.

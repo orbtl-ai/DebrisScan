@@ -63,11 +63,10 @@ def object_detection(task_folder, images_to_process):
         i_basename, i_ext = splitext(current_image)
 
         # ----------------------------------------------------------------
-        # IF RESAMPLE=True, THEN CALCULATE GSD AND RESAMPLE THE O.G. IMAGE
+        # RESAMPLE IMAGES (IF resample_images=True)
         # ----------------------------------------------------------------
-        resampled_path = i_path
-        if user_sub["skip_optional_resampling"] is False:
-            print("IF!")
+        resampled_path = i_path  # if resample is False, fall back to original image
+        if user_sub["resample_images"] is True:
             print(f"Resampling image {current_image}...")
 
             with Image.open(i_path, mode="r") as in_image:
@@ -108,10 +107,12 @@ def object_detection(task_folder, images_to_process):
                     f"... resampling complete! Image resampled from {in_image.size} \
                     to {processed_image.size}."
                 )
+        else:
+            print(f"User declined resampling image {current_image}.")
 
-        # ----------------------------------
-        # CHIP LARGE IMAGE FOR TF INFERENCE
-        # ----------------------------------
+        # -------------------------------
+        # CHIP GEO IMAGE FOR TF INFERENCE
+        # -------------------------------
         with Image.open(resampled_path) as in_image:
             if in_image.mode != "RGB":
                 in_image = in_image.convert("RGB")
@@ -123,9 +124,9 @@ def object_detection(task_folder, images_to_process):
                 image_array, api_configs.CHIP_SIZE
             )
 
-        # -------------------------
-        # INFERENCE WITH TENSORFLOW
-        # -------------------------
+        # --------------------
+        # TENSORFLOW INFERENCE
+        # --------------------
         start = time.time()  # start the clock
         predictions = asyncio.run(
             batch_inference(
@@ -141,6 +142,7 @@ def object_detection(task_folder, images_to_process):
             f"All chips were processed in {total_time} seconds. \
             This is {time_per_chips} seconds per chip."
         )
+
         # -----------------------------
         # UN-CHIP THE INFERENCE RESULTS
         # -----------------------------
@@ -152,9 +154,9 @@ def object_detection(task_folder, images_to_process):
             meta_dict["chip_width"],
         )
 
-        # -----------------------------
-        # PLOT RESULTS ON IMAGES, WRITE
-        # -----------------------------
+        # ----------------------------
+        # PLOT RESULTS ON IMAGES, SAVE
+        # ----------------------------
         with open(api_configs.COLOR_MAP_JSON, "rb") as color_map:
             color_map_dict = json.load(color_map, object_hook=json_keys_to_int)
         print(color_map_dict)
@@ -173,18 +175,18 @@ def object_detection(task_folder, images_to_process):
         image_plot.save(out_image_path)
         print(f"Wrote {out_image_path}")
 
-        # ------------------
-        # WRITE JSON RESULTS
-        # ------------------
+        # -----------------
+        # SAVE JSON RESULTS
+        # -----------------
         json_results_path = join(
             task_paths["per_results_path"], f"{i_basename}_debris_objects.json"
         )
         with open(json_results_path, mode="w", encoding="utf-8") as outfile:
             json.dump(final_results_dict, outfile, indent=3)
 
-        # ------------------
-        # WRITE CSV RESULTS
-        # ------------------
+        # ----------------
+        # SAVE CSV RESULTS
+        # ----------------
         results_df = results_dict_to_dataframe(
             i_basename, final_results_dict[i_basename], label_map_dict
         )
@@ -196,9 +198,9 @@ def object_detection(task_folder, images_to_process):
 
         print(f"Completed processing of {current_image}.")
 
-    # -------------------------
-    # COLLATE TOTAL RESULTS
-    # -------------------------
+    # --------------------------------------------
+    # COLLATE ALL IMAGE RESULTS INTO BATCH RESULTS
+    # --------------------------------------------
     print("Completed processing of all images. Zipping final results...")
 
     final_results_df, final_counts_series = collate_per_image_results(
