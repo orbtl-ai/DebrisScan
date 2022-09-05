@@ -1,0 +1,16 @@
+{
+    "Skydio 2": {
+        "platform_type": "UAV",
+        "camera_name": "Skydio 2",
+        "focal_length_mm": 3.7,
+        "sensor_height_cm": 0.462,
+        "sensor_width_cm": 0.617
+    },
+    "Phantom 4 Pro": {
+        "platform_type": "UAV",
+        "camera_name": "Phantom 4 Pro",
+        "focal_length_mm": 8.8,
+        "sensor_height_cm": 0.88,
+        "sensor_width_cm": 1.32
+    }
+}

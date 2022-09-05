@@ -1,0 +1,49 @@
+item {
+	id: 1
+	name: 'unidentified fragment'
+}
+
+item {
+	id: 2
+	name: 'plastic object'
+}
+
+item {
+	id: 3
+	name: 'buoy'
+}
+
+item {
+	id: 4
+	name: 'fishing net'
+}
+
+item {
+	id: 5
+	name: 'fishing line'
+}
+
+item {
+	id: 6
+	name: 'metal'
+}
+
+item {
+	id: 7
+	name: 'tire donut'
+}
+
+item {
+	id: 8
+	name: 'wood board'
+}
+
+item {
+	id: 9
+	name: 'wood pallet'
+}
+
+item {
+	id: 10
+	name: 'vessel'
+}

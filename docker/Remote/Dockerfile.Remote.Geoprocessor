@@ -1,0 +1,20 @@
+FROM osgeo/gdal:ubuntu-small-3.3.3
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip
+RUN rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+ENV PYTHONPATH "${PYTHONPATH}:/app/"
+
+COPY app/geoprocessor/ ./geoprocessor
+COPY app/configs/ ./configs
+
+RUN pip install --no-cache-dir -r /app/geoprocessor/requirements.txt 
+
+#RUN pip install --upgrade numpy # once needed for pandas in requirements.txt...
+RUN rm -rf /root/.cache/pip/*
+
+#CMD is currently set in docker-compose.yml

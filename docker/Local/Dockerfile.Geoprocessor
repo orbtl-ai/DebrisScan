@@ -1,0 +1,26 @@
+FROM osgeo/gdal:ubuntu-small-3.3.3
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip
+RUN rm -rf /var/lib/apt/lists/*
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+COPY app/geoprocessor/requirements.txt /tmp/requirements.txt
+
+RUN pip install --no-cache-dir \
+    -r /tmp/requirements.txt
+#NOTE: following line is needed after pandas added to
+#      geo-requirements.txt.
+#RUN pip install --upgrade numpy
+RUN rm -rf /root/.cache/pip/*
+
+#NOTE: these are for prod, bind mounting /app_data for local dev does not honor these
+#      settings.
+#RUN mkdir /app_data
+#RUN chown -R nobody:nogroup /app_data
+
+ENV PYTHONPATH "${PYTHONPATH}:/app/"
