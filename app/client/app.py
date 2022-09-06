@@ -94,14 +94,22 @@ async def get_task_status(task_id):
     """
     result = AsyncResult(task_id, app=celery_app)
 
-    output = {
-        "task_id": result.id,
-        "status": result.state,
-        "error": str(result.info) if result.failed() else None,
-        "results": str(result.get()) if result.state == states.SUCCESS else None,
-    }
+    result_state = str(result.state)
+    result_error = str(result.info) if result.failed() else None
+    result_file = str(result.get()) if result.state == states.SUCCESS else None
 
-    return JSONResponse(status_code=200, content=output)
+    if result_error is None and result_state == "PENDING":
+        out_status = "PENDING: Your submission has been received and is currently \
+        waiting in a queue for processing. Please check back later."
+    elif result_error is None and result_state == "STARTED":
+        out_status = "STARTED: Your submission is currently being processed."
+    elif result_error is not None:
+        out_status = f"{result.id} HAS FAILED!. {str(result_error)}."
+    else:
+        out_status = f"{result.id}'s job status can not be retrieved reliably... \
+            please contact the project's administrators."
+
+    return {out_status}
 
 
 async def get_task_results(task_id: str):
@@ -177,24 +185,22 @@ with gr.Blocks(title=browser_title) as demo:
 
     with gr.Tab("Start Object Detection Task"):
         with gr.Row():
+
             with gr.Column():
                 gr.Markdown("## Aerial Image Upload")
                 in_aerial_images = gr.File(
                     label="Aerial Image Upload",
                     file_count="multiple",
                 )
-
                 gr.Markdown("## Optional Settings")
-
                 with gr.Column():
-                    gr.Markdown("### Auto-resample aerial images to 2cm resolution?")
                     gr.Markdown("""
+                        ### Auto-resample aerial images to 2cm resolution?
                         *Resampling requires us to know more about your imagery, but it
                         should improve your detection results by ensuring your aerial
                         images match our AI's expectations (they can be a little picky-
                         HIGHLY RECOMMENDED).*
-                        """)
-
+                    """)
                     in_resampling = gr.Checkbox(
                             label=f"Automatically resample aerial images to \
                                 {int(api_configs.TARGET_GSD_CM)}cm resolution?\
@@ -220,9 +226,10 @@ with gr.Blocks(title=browser_title) as demo:
                         inputs=in_resampling,
                         outputs=[in_flight_agl, in_sensor_platform],
                     )
+
                 with gr.Column():
-                    gr.Markdown("### Modify Confidence Threshold?")
                     gr.Markdown("""
+                        ### Modify Confidence Threshold?
                         *Our detectors assign each detection a
                         'confidence score'. This setting filters all detections whose
                         confidence score is below the threshold. Lowering the threshold
@@ -230,7 +237,8 @@ with gr.Blocks(title=browser_title) as demo:
                         rate of false positive detections. Conversely, increasing the
                         threshold filters the most uncertain detections, biasing the
                         results towards a higher rate of false negative detections.
-                        (RECOMMENDED DEFAULT VALUE: 30%)*""")
+                        (RECOMMENDED DEFAULT VALUE: 30%)*
+                    """)
                     confidence_threshold = gr.Slider(
                         label="Confidence Threshold (%)",
                         minimum=0,
@@ -238,7 +246,6 @@ with gr.Blocks(title=browser_title) as demo:
                         value=api_configs.CONFIDENCE_THRESHOLD,
                         step=5,
                     )
-
                 submit_button = gr.Button(value="Upload Imagery")
 
             with gr.Column(visible=False) as upload_results:
@@ -264,7 +271,7 @@ with gr.Blocks(title=browser_title) as demo:
         with gr.Column():
             in_task_id = gr.Text(label="Task ID")
             status_button = gr.Button(value="Get Job Status")
-            out_status = gr.JSON(label="Status")
+            out_status = gr.Text(label="Task Status")
         status_button.click(
             get_task_status,
             inputs=[in_task_id],
@@ -274,7 +281,6 @@ with gr.Blocks(title=browser_title) as demo:
 
 
 # gr.close_all()
-
 # conc_count: "Number of worker threads that will be processing requests concurrently."
 # demo.queue(concurrency_count=2)
 demo.launch(server_name="0.0.0.0", server_port=8080, debug=True)
