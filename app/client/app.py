@@ -26,7 +26,7 @@ APP_DATA = getenv("DOCKER_APP_DATA", "/app_data")
 supported_sensors = json.load(open(api_configs.SUPPORTED_SENSORS_JSON, "r"))
 
 
-def async_object_detection(
+async def async_object_detection(
     aerial_images, resample, flight_agl, sensor_platform, confidence_threshold
 ):
     """
@@ -109,7 +109,7 @@ async def get_task_status(task_id):
         }
 
     elif result_error is None and result_state == "STARTED":
-        out_message = "STARTED: Your submission is currently being processed."
+        out_message = "STARTED: Your submission is currently being processed! Please check back later."
 
         return {
             out_status: gr.update(value=out_message, visible=True),
@@ -141,32 +141,6 @@ async def get_task_status(task_id):
             out_file: gr.update(visible=False),
         }
 
-
-async def get_task_results(task_id: str):
-    """This function returns the results of a Celery task when provided with a task_id.
-    The task_id is provided in the URL as a path parameter.
-
-    Inputs:
-    - task_id: A string representation of a unique task_id associated with a
-        Celery task.
-
-    Returns:
-    - FileResponse with the a zip file containing the results of the task.
-    """
-    result = AsyncResult(task_id)
-
-    if result.state != states.SUCCESS:
-        return JSONResponse(
-            status_code=204, content={"status": result.state, "error": str(result.info)}
-        )
-    elif result.state == states.SUCCESS:
-        return FileResponse(
-            result.get(),
-            media_type="application/octet-stream",
-            filename=f"{result.id}_results.zip",
-        )
-
-
 def toggle_resampling(choice):
     if choice == "False":
         return {
@@ -191,7 +165,6 @@ def toggle_resampling(choice):
             in_flight_agl: gr.update(visible=False),
             in_sensor_platform: gr.update(visible=False),
         }
-
 
 browser_title = "DebrisScan Demo"
 
