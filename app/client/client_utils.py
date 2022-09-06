@@ -117,7 +117,7 @@ def nonasync_file_save(task_id, file_uploads, dest):
 
 
 def dump_user_submission_to_json(
-    aerial_images, skip_resampling, flight_agl, sensor_platform, confidence_threshold,
+    aerial_images, resample, flight_agl, sensor_platform, confidence_threshold,
     output_path
 ):
     """A simple function designed to a list of user submission parameters, make a pretty
@@ -134,7 +134,7 @@ def dump_user_submission_to_json(
 
     user_sub = {
         "number_of_images": str(len(aerial_images)),
-        "skip_optional_resampling": str(skip_resampling),
+        "resample_images": str(resample),
         "flight_agl": str(flight_agl),
         "sensor_platform": str(sensor_platform),
         "confidence_threshold": str(confidence_threshold),
