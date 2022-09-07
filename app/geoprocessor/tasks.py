@@ -17,7 +17,7 @@ from geoprocessor.utils.object_detection import (
     prep_sensor_params,
     json_keys_to_int,
     calc_max_gsd,
-    resize_to_gsd,
+    downsample_to_gsd,
     chip_geo_image,
     unchip_geo_image,
     batch_inference,
@@ -62,58 +62,64 @@ def object_detection(task_folder, images_to_process):
         i_path = join(task_folder, current_image)
         i_basename, i_ext = splitext(current_image)
 
-        # ----------------------------------------------------------------
-        # RESAMPLE IMAGES (IF resample_images=True)
-        # ----------------------------------------------------------------
-        resampled_path = i_path  # if resample is False, fall back to original image
-        if user_sub["resample_images"] is True:
-            print(f"Resampling image {current_image}...")
+        # ----------------------------------`
+        # Pre-load sensor params
+        # ----------------------------------
+        with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
+            supported_sensors = json.load(f)
+            sensor_params = prep_sensor_params(
+                supported_sensors, user_sub["sensor_platform"]
+            )
 
-            with Image.open(i_path, mode="r") as in_image:
-                if in_image.mode != "RGB":
-                    in_image = in_image.convert("RGB")
+        # ----------------------
+        # BEGIN IMAGE PROCESSING
+        # ----------------------
+        with Image.open(i_path, mode="r") as in_image:
+            if in_image.mode != "RGB":
+                in_image = in_image.convert("RGB")
 
+            # ------------------------------------------
+            # DOWNSAMPLE TO API's GSD (IF USER OPTED-IN)
+            # ------------------------------------------
+            preprocessed_path = i_path  # This is the fall back if resampling is declined
+            if str(user_sub["resample_images"]) == "True":
+                print("Begin Downsampling...")
+                # --- ESTIMATE IMAGE GSD ---
                 image_height, image_width = in_image.size
 
-                # Retrieve sensor params
-                with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
-                    supported_sensors = json.load(f)
-                    sensor_params = prep_sensor_params(
-                        supported_sensors, user_sub["sensor_platform"]
-                    )
-
                 max_gsd = calc_max_gsd(
-                    user_sub["flight_AGL"],
+                    user_sub["flight_agl"],
                     image_height,
                     image_width,
                     sensor_params,
                 )
+                print(f"Estimated input image's max GSD: {max_gsd}")
 
+                # --- DOWNSAMPLE IMAGE TO TARGET GSD ---
+                processed_image = downsample_to_gsd(
+                    in_image, max_gsd, api_configs.TARGET_GSD_CM
+                )
+
+                if processed_image is not None:  # If None, the image needed upsampling
+                    preprocessed_path = join(
+                        task_paths["tmp_path"], f"{i_basename}_resample{i_ext}"
+                    )
+                    processed_image.save(preprocessed_path)
+
+                    print(
+                        f"User opted-in to downsampling. New image of size \
+                            {processed_image.size} generated from original image of \
+                            {in_image.size} and saved to {preprocessed_path}."
+                    )
+            else:
                 print(
-                    f"the {current_image}'s GSD was automatically computed to be \
-                    {max_gsd} centimeters. Images are going to be resampled to the \
-                    API's target GSD of {user_sub['target_gsd_cm']} centimeters."
+                    f"User declined reasampling. Using image at {preprocessed_path}"
                 )
 
-                processed_image = resize_to_gsd(
-                    in_image, max_gsd, user_sub["api_target_gsd"]
-                )
-
-                resampled_path = join(
-                    task_paths["tmp_path"], f"{i_basename}_resample{i_ext}"
-                )
-                processed_image.save(resampled_path)
-                print(
-                    f"... resampling complete! Image resampled from {in_image.size} \
-                    to {processed_image.size}."
-                )
-        else:
-            print(f"User declined resampling image {current_image}.")
-
-        # -------------------------------
-        # CHIP GEO IMAGE FOR TF INFERENCE
-        # -------------------------------
-        with Image.open(resampled_path) as in_image:
+        # ----------------------------------------------
+        # CHIP "PREPROCESSED" GEO IMAGE FOR TF INFERENCE
+        # ----------------------------------------------
+        with Image.open(preprocessed_path) as in_image:
             if in_image.mode != "RGB":
                 in_image = in_image.convert("RGB")
 
@@ -159,10 +165,8 @@ def object_detection(task_folder, images_to_process):
         # ----------------------------
         with open(api_configs.COLOR_MAP_JSON, "rb") as color_map:
             color_map_dict = json.load(color_map, object_hook=json_keys_to_int)
-        print(color_map_dict)
 
         label_map_dict = read_tf_label_map(api_configs.LABEL_MAP_PBTXT)
-        print(label_map_dict)
 
         image_plot = plot_bboxes_on_image(
             i_path, final_results_dict[i_basename], color_map_dict, label_map_dict
@@ -201,7 +205,7 @@ def object_detection(task_folder, images_to_process):
     # --------------------------------------------
     # COLLATE ALL IMAGE RESULTS INTO BATCH RESULTS
     # --------------------------------------------
-    print("Completed processing of all images. Zipping final results...")
+    print("Completed processing of all images! Collating final results...")
 
     final_results_df, final_counts_series = collate_per_image_results(
         task_paths["per_results_path"]
