@@ -416,8 +416,7 @@ async def _async_post(session, url, batch, i, results, raw_conf_threshold=0.0):
 
             else:
                 print(
-                    f"{i} had predictions, but they were all below \
-                    the confidence threshold of {conf_threshold}."
+                    f"{i} had predictions, but they were all below the confidence threshold of {conf_threshold}."
                 )
         else:
             print(f"No predictions at all for {i}.")

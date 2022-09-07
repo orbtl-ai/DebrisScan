@@ -62,15 +62,6 @@ def object_detection(task_folder, images_to_process):
         i_path = join(task_folder, current_image)
         i_basename, i_ext = splitext(current_image)
 
-        # ----------------------------------`
-        # Pre-load sensor params
-        # ----------------------------------
-        with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
-            supported_sensors = json.load(f)
-            sensor_params = prep_sensor_params(
-                supported_sensors, user_sub["sensor_platform"]
-            )
-
         # ----------------------
         # BEGIN IMAGE PROCESSING
         # ----------------------
@@ -86,6 +77,13 @@ def object_detection(task_folder, images_to_process):
                 print("Begin Downsampling...")
                 # --- ESTIMATE IMAGE GSD ---
                 image_height, image_width = in_image.size
+
+                # Load sensor params
+                with open(api_configs.SUPPORTED_SENSORS_JSON, "rb") as f:
+                    supported_sensors = json.load(f)
+                    sensor_params = prep_sensor_params(
+                        supported_sensors, user_sub["sensor_platform"]
+                    )
 
                 max_gsd = calc_max_gsd(
                     user_sub["flight_agl"],
@@ -168,7 +166,6 @@ def object_detection(task_folder, images_to_process):
 
         label_map_dict = read_tf_label_map(api_configs.LABEL_MAP_PBTXT)
 
-        print(label_map_dict)
         image_plot = plot_bboxes_on_image(
             i_path, final_results_dict[i_basename], color_map_dict, label_map_dict
         )
