@@ -89,8 +89,8 @@ def ndv_check(chip: np.ndarray, verbose=False) -> bool:
     if verbose is True:
         print(f"max_value for chip's dtype of {chip.dtype} is {max_value}.")
 
-    maxes = np.ones_like(chip, dtype=np.uint8) * max_value
-    zeros = np.zeros_like(chip, dtype=np.uint8)
+    maxes = np.ones_like(chip, dtype=chip.dtype) * max_value
+    zeros = np.zeros_like(chip, dtype=chip.dtype)
 
     is_ndv = False
     if np.array_equal(maxes, chip) is True or np.array_equal(zeros, chip):
@@ -654,13 +654,15 @@ def pd_centerpoint(pt1, pt2):
     """ Calculates a centerpoint.
     Designed for use in a pd.apply() statement.
     """
-    return (pt1 + pt2) / 2
+    return round(((pt1 + pt2) / 2))
+
 
 def pd_dim(min_pt, max_pt):
     """ Calculates the distance between two points.
     Designed for use in a pd.apply() statement.
     """
     return (max_pt - min_pt)
+
 
 def results_dict_to_dataframe(image_name, orig_results, label_map):
     """This functions converts the results dictionary into a Pandas DataFrame.
@@ -676,7 +678,7 @@ def results_dict_to_dataframe(image_name, orig_results, label_map):
     results = orig_results.copy()
 
     # split the bbox coordinates to individual lists (columns).
-    bbox_array = np.array(results["bboxes"], dtype=np.uint8)
+    bbox_array = np.array(results["bboxes"], dtype=np.uint32)
     ymin = bbox_array[:, 0].tolist()
     xmin = bbox_array[:, 1].tolist()
     ymax = bbox_array[:, 2].tolist()
@@ -696,7 +698,7 @@ def results_dict_to_dataframe(image_name, orig_results, label_map):
 
     # add a class name column. the .astype() is because the label_map dict gets crushed
     # to all strings when passed from FastAPI to the Celery worker.
-    raw_df["class_name"] = raw_df["classes"].astype("string")
+    raw_df["class_name"] = raw_df["classes"]
     raw_df.replace({"class_name": label_map}, inplace=True)
 
     # beautify!
@@ -711,7 +713,7 @@ def results_dict_to_dataframe(image_name, orig_results, label_map):
     )
 
     raw_df["y_height"] = raw_df.apply(
-        lambda row: pd_dim(row["y_row_bottom"], row["y_row_top"]), axis=1
+        lambda row: pd_dim(row["y_row_top"], row["y_row_bottom"]), axis=1
     )
     raw_df["x_width"] = raw_df.apply(
         lambda row: pd_dim(row["x_col_left"], row["x_col_right"]), axis=1

@@ -139,8 +139,8 @@ def object_detection(task_folder, images_to_process):
                 chip_array, api_configs.TF_SERVING_URL,
                 user_sub["confidence_threshold"], concurrency=1)
         )
-
         end = time.time()
+
         total_time = end - start
         time_per_chips = total_time / len(chip_array)
         print(f"{len(predictions)} of {len(chip_array)} chips had detections.")
@@ -168,6 +168,7 @@ def object_detection(task_folder, images_to_process):
 
         label_map_dict = read_tf_label_map(api_configs.LABEL_MAP_PBTXT)
 
+        print(label_map_dict)
         image_plot = plot_bboxes_on_image(
             i_path, final_results_dict[i_basename], color_map_dict, label_map_dict
         )
