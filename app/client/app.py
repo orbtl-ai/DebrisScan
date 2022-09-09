@@ -169,14 +169,28 @@ def toggle_resampling(choice):
 
 browser_title = "DebrisScan Demo"
 
-md_title = "# Welcome to DebrisScan"
+html_header = """
+    <div style="padding: 10px; border-radius: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #FFFFFF;">Welcome to the 🌊🥤<br />DebrisScan API ✈️🤖</H1>
+            <img src="http://orbtl.ai/wp-content/uploads/2022/09/debrisscan_header2.jpg?raw=true" width="60%" />
+        </div>
+    </div>
+"""
+
+
+md_title = """ # Welcome to 🌊🥤
+                # DebrisScan API ✈️🤖
+"""
+
 
 md_description = """
-    **DebrisScan is an AI-based tool that automatically detects, classifies, and measures
+    **DebrisScan API is an AI-based tool that automatically detects, classifies, and measures
     shoreline-stranded marine debris from aerial images. This demo allows you to upload
     your own aerial images (typically taken from a drone or aircraft) to be scanned for
     marine debris by our cutting-edge AI!**
 """
+
 
 # generate an html block with white background and three images in a row
 html_images = """
@@ -189,6 +203,7 @@ html_images = """
     </div>
 """
 
+
 md_article = """
     DebrisScan was developed by [ORBTL AI](https://orbtl.ai) with partnership and funding
     from [Oregon State University](https://oregonstate.edu/),
@@ -196,8 +211,15 @@ md_article = """
     and [NOAA's Marine Debris Program](https://marinedebris.noaa.gov/).
 """
 
+
+md_footer = """
+    For more information about DebrisScan, please visit the following links: [NOAA NCCOS Project Homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/) | [DebrisScan's Open GitHub Repo](https://github.com/orbtl-ai/debris-scan)
+"""
+
+
 with gr.Blocks(title=browser_title) as demo:
-    gr.Markdown(md_title)
+    #gr.Markdown(md_title)
+    gr.HTML(html_header)
     gr.Markdown(md_description)
 
     with gr.Tab("Start Object Detection Task"):
@@ -212,7 +234,7 @@ with gr.Blocks(title=browser_title) as demo:
                 gr.Markdown("## Optional Settings")
                 with gr.Column():
                     gr.Markdown("""
-                        ### Auto-downsample your aerial images to match the AI's expected resolution?
+                        ### Automatically downsample your aerial images to match the AI's expected resolution?
                         *This procedure requires us to know more about your imagery,
                         but it should improve your detection results by ensuring your
                         aerial image resolution matches the image resolution used to
@@ -221,7 +243,7 @@ with gr.Blocks(title=browser_title) as demo:
                     """)
                     in_resampling = gr.Checkbox(
                             label=f"Auto-downsample your imagery to \
-                                {int(api_configs.TARGET_GSD_CM)}cm?"
+                                {int(api_configs.TARGET_GSD_CM)}cm resolution?"
                     )
                     in_flight_agl = gr.Slider(
                         label="Flying Height Above Ground Level (meters)",
@@ -309,6 +331,7 @@ with gr.Blocks(title=browser_title) as demo:
 
     gr.Markdown(md_article)
     gr.HTML(html_images)
+    gr.Markdown(md_footer)
 
 
 # gr.close_all()
