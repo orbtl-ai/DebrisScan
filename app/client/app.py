@@ -8,7 +8,6 @@ import uuid
 from celery import states
 from celery.result import AsyncResult
 
-from fastapi.responses import JSONResponse, FileResponse
 import gradio as gr
 
 from client.client_utils import (
@@ -77,7 +76,7 @@ async def async_object_detection(
     return {
         upload_results: gr.update(visible=True),
         out_payload: str(task_id),
-        out_message: "Upload Successful! However it may take us awhile to count all that debris!! Luckily you don't need to wait around for us! Please save your Task ID and return at any time to check your Task Status at the tab above!"
+        out_message: "Upload Successful! It may take our robots awhile to count all that debris, so you shouldn't wait around for them! Please save your Task ID (above) and return later to retrieve your results at the 'Retrive Results' tab above!"
     }
 
 
@@ -141,6 +140,7 @@ async def get_task_status(task_id):
             out_file: gr.update(visible=False),
         }
 
+
 def toggle_resampling(choice):
     if choice == "False":
         return {
@@ -166,26 +166,61 @@ def toggle_resampling(choice):
             in_sensor_platform: gr.update(visible=False),
         }
 
+
 browser_title = "DebrisScan Demo"
 
-demo_title = "# Welcome to DebrisScan"
+html_header = """
+    <div style="padding: 10px; border-radius: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #FFFFFF;">Welcome to the 🌊🥤<br />DebrisScan API ✈️🤖</H1>
+            <img src="http://orbtl.ai/wp-content/uploads/2022/09/debrisscan_header2.jpg?raw=true" width="60%" />
+        </div>
+    </div>
+"""
 
-demo_description = """
-    **DebrisScan is an AI-based tool that automatically detects, classifies, and measures
+
+md_title = """ # Welcome to 🌊🥤
+                # DebrisScan API ✈️🤖
+"""
+
+
+md_description = """
+    **DebrisScan API is an AI-based tool that automatically detects, classifies, and measures
     shoreline-stranded marine debris from aerial images. This demo allows you to upload
     your own aerial images (typically taken from a drone or aircraft) to be scanned for
     marine debris by our cutting-edge AI!**
 """
 
-demo_article = """
-    DebrisScan was created by [ORBTL AI](https://orbtl.ai) with partnership and funding
+
+# generate an html block with white background and three images in a row
+html_images = """
+    <div style="background-color:white; padding: 10px; border-radius: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <img src="http://orbtl.ai/wp-content/uploads/2022/09/orbtl_black_txtOnly_largeBorder.jpg?raw=true" width="30%" />
+            <img src="https://oceanservice.noaa.gov/facts/noaa-emblem-rgb-2022.png?raw=true" width="20%" />
+            <img src="https://communications.oregonstate.edu/sites/communications.oregonstate.edu/files/osu-primarylogo-2-compressor.jpg?raw=true" width="30%" />
+        </div>
+    </div>
+"""
+
+
+md_article = """
+    DebrisScan was developed by [ORBTL AI](https://orbtl.ai) with partnership and funding
     from [Oregon State University](https://oregonstate.edu/),
     [NOAA's National Centers for Coastal Ocean Science](https://coastalscience.noaa.gov/),
     and [NOAA's Marine Debris Program](https://marinedebris.noaa.gov/).
 """
+
+
+md_footer = """
+    For more information about DebrisScan, please visit the following links: [NOAA NCCOS Project Homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/) | [DebrisScan's Open GitHub Repo](https://github.com/orbtl-ai/debris-scan)
+"""
+
+
 with gr.Blocks(title=browser_title) as demo:
-    gr.Markdown(demo_title)
-    gr.Markdown(demo_description)
+    #gr.Markdown(md_title)
+    gr.HTML(html_header)
+    gr.Markdown(md_description)
 
     with gr.Tab("Start Object Detection Task"):
         with gr.Row():
@@ -199,16 +234,16 @@ with gr.Blocks(title=browser_title) as demo:
                 gr.Markdown("## Optional Settings")
                 with gr.Column():
                     gr.Markdown("""
-                        ### Auto-resample your aerial images to match the AI's expected resolution?
-                        *Auto-resampling requires us to know more about your imagery,
+                        ### Automatically downsample your aerial images to match the AI's expected resolution?
+                        *This procedure requires us to know more about your imagery,
                         but it should improve your detection results by ensuring your
                         aerial image resolution matches the image resolution used to
                         train our AIs (they can be a little picky- so this is HIGHLY
                         RECOMMENDED).*
                     """)
                     in_resampling = gr.Checkbox(
-                            label=f"Auto-resample your imagery to \
-                                {int(api_configs.TARGET_GSD_CM)}cm?"
+                            label=f"Auto-downsample your imagery to \
+                                {int(api_configs.TARGET_GSD_CM)}cm resolution?"
                     )
                     in_flight_agl = gr.Slider(
                         label="Flying Height Above Ground Level (meters)",
@@ -266,9 +301,10 @@ with gr.Blocks(title=browser_title) as demo:
                     confidence_threshold,
                 ],
                 outputs=[upload_results, out_payload, out_message],
+                #api_name="object_detection",
             )
 
-    with gr.Tab("Retrieve Task Status"):
+    with gr.Tab("Retrieve Results"):
         gr.Markdown("## Enter Task ID")
         with gr.Column():
             in_task_id = gr.Text(label="Task ID", show_label=False)
@@ -290,11 +326,15 @@ with gr.Blocks(title=browser_title) as demo:
             get_task_status,
             inputs=[in_task_id],
             outputs=[out_status, out_file],
+            #api_name="retrieve_task_status",
         )
-    gr.Markdown(demo_article)
+
+    gr.Markdown(md_article)
+    gr.HTML(html_images)
+    gr.Markdown(md_footer)
 
 
 # gr.close_all()
 # conc_count: "Number of worker threads that will be processing requests concurrently."
-# demo.queue(concurrency_count=2)
-demo.launch(server_name="0.0.0.0", server_port=8080, debug=True)
+# demo.queue(concurrency_count=1)
+demo.launch(server_name="0.0.0.0", server_port=8080)
