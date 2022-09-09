@@ -8,7 +8,6 @@ import uuid
 from celery import states
 from celery.result import AsyncResult
 
-from fastapi.responses import JSONResponse, FileResponse
 import gradio as gr
 
 from client.client_utils import (
@@ -141,6 +140,7 @@ async def get_task_status(task_id):
             out_file: gr.update(visible=False),
         }
 
+
 def toggle_resampling(choice):
     if choice == "False":
         return {
@@ -166,26 +166,39 @@ def toggle_resampling(choice):
             in_sensor_platform: gr.update(visible=False),
         }
 
+
 browser_title = "DebrisScan Demo"
 
-demo_title = "# Welcome to DebrisScan"
+md_title = "# Welcome to DebrisScan"
 
-demo_description = """
+md_description = """
     **DebrisScan is an AI-based tool that automatically detects, classifies, and measures
     shoreline-stranded marine debris from aerial images. This demo allows you to upload
     your own aerial images (typically taken from a drone or aircraft) to be scanned for
     marine debris by our cutting-edge AI!**
 """
 
-demo_article = """
-    DebrisScan was created by [ORBTL AI](https://orbtl.ai) with partnership and funding
+# generate an html block with white background and three images in a row
+html_images = """
+    <div style="background-color:white; padding: 10px; border-radius: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <img src="http://orbtl.ai/wp-content/uploads/2022/09/orbtl_black_txtOnly_largeBorder.jpg?raw=true" width="30%" />
+            <img src="https://oceanservice.noaa.gov/facts/noaa-emblem-rgb-2022.png?raw=true" width="20%" />
+            <img src="https://communications.oregonstate.edu/sites/communications.oregonstate.edu/files/osu-primarylogo-2-compressor.jpg?raw=true" width="30%" />
+        </div>
+    </div>
+"""
+
+md_article = """
+    DebrisScan was developed by [ORBTL AI](https://orbtl.ai) with partnership and funding
     from [Oregon State University](https://oregonstate.edu/),
     [NOAA's National Centers for Coastal Ocean Science](https://coastalscience.noaa.gov/),
     and [NOAA's Marine Debris Program](https://marinedebris.noaa.gov/).
 """
+
 with gr.Blocks(title=browser_title) as demo:
-    gr.Markdown(demo_title)
-    gr.Markdown(demo_description)
+    gr.Markdown(md_title)
+    gr.Markdown(md_description)
 
     with gr.Tab("Start Object Detection Task"):
         with gr.Row():
@@ -266,6 +279,7 @@ with gr.Blocks(title=browser_title) as demo:
                     confidence_threshold,
                 ],
                 outputs=[upload_results, out_payload, out_message],
+                #api_name="object_detection",
             )
 
     with gr.Tab("Retrieve Task Status"):
@@ -290,11 +304,14 @@ with gr.Blocks(title=browser_title) as demo:
             get_task_status,
             inputs=[in_task_id],
             outputs=[out_status, out_file],
+            #api_name="retrieve_task_status",
         )
-    gr.Markdown(demo_article)
+
+    gr.Markdown(md_article)
+    gr.HTML(html_images)
 
 
 # gr.close_all()
 # conc_count: "Number of worker threads that will be processing requests concurrently."
-# demo.queue(concurrency_count=2)
-demo.launch(server_name="0.0.0.0", server_port=8080, debug=True)
+# demo.queue(concurrency_count=1)
+demo.launch(server_name="0.0.0.0", server_port=8080)
