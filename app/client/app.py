@@ -76,7 +76,7 @@ async def async_object_detection(
     return {
         upload_results: gr.update(visible=True),
         out_payload: str(task_id),
-        out_message: "Upload Successful! However it may take us awhile to count all that debris!! Luckily you don't need to wait around for us! Please save your Task ID and return at any time to check your Task Status at the tab above!"
+        out_message: "Upload Successful! It may take our robots awhile to count all that debris, so you shouldn't wait around for them! Please save your Task ID (above) and return later to retrieve your results at the 'Retrive Results' tab above!"
     }
 
 
@@ -212,15 +212,15 @@ with gr.Blocks(title=browser_title) as demo:
                 gr.Markdown("## Optional Settings")
                 with gr.Column():
                     gr.Markdown("""
-                        ### Auto-resample your aerial images to match the AI's expected resolution?
-                        *Auto-resampling requires us to know more about your imagery,
+                        ### Auto-downsample your aerial images to match the AI's expected resolution?
+                        *This procedure requires us to know more about your imagery,
                         but it should improve your detection results by ensuring your
                         aerial image resolution matches the image resolution used to
                         train our AIs (they can be a little picky- so this is HIGHLY
                         RECOMMENDED).*
                     """)
                     in_resampling = gr.Checkbox(
-                            label=f"Auto-resample your imagery to \
+                            label=f"Auto-downsample your imagery to \
                                 {int(api_configs.TARGET_GSD_CM)}cm?"
                     )
                     in_flight_agl = gr.Slider(
@@ -282,7 +282,7 @@ with gr.Blocks(title=browser_title) as demo:
                 #api_name="object_detection",
             )
 
-    with gr.Tab("Retrieve Task Status"):
+    with gr.Tab("Retrieve Results"):
         gr.Markdown("## Enter Task ID")
         with gr.Column():
             in_task_id = gr.Text(label="Task ID", show_label=False)
