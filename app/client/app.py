@@ -76,7 +76,7 @@ async def async_object_detection(
     return {
         upload_results: gr.update(visible=True),
         out_payload: str(task_id),
-        out_message: "Upload Successful! It may take our robots awhile to count all that debris, so you shouldn't wait around for them! Please save your Task ID (above) and return later to retrieve your results at the 'Retrive Results' tab above!"
+        out_message: "Upload Successful! It may take our robots awhile to count all that debris, so you shouldn't wait around for them! Please save your Job ID (above) and return later to retrieve your results at the 'Retrive Results' tab above!"
     }
 
 
@@ -172,16 +172,17 @@ browser_title = "DebrisScan Demo"
 html_header = """
     <div style="padding: 10px; border-radius: 10px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #FFFFFF;">Welcome to the 🌊🥤<br />DebrisScan API ✈️🤖</H1>
+            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #FFFFFF;">Welcome to 🌊🥤<br/>DebrisScan 🤖📸<br/>(DEMO v0.05)</H1>
             <img src="http://orbtl.ai/wp-content/uploads/2022/09/debrisscan_header2.jpg?raw=true" width="60%" />
         </div>
     </div>
 """
 
 
-md_title = """ # Welcome to 🌊🥤
-                # DebrisScan API ✈️🤖
-"""
+#md_title = """ # Welcome to 🌊🥤
+#                # DebrisScan 📸 🤖
+#                # (*DEMO v0.05*)
+#"""
 
 
 md_description = """
@@ -222,16 +223,15 @@ with gr.Blocks(title=browser_title) as demo:
     gr.HTML(html_header)
     gr.Markdown(md_description)
 
-    with gr.Tab("Start Object Detection Task"):
+    with gr.Tab("Job Upload"):
         with gr.Row():
-
             with gr.Column():
-                gr.Markdown("## Aerial Image Upload")
+                gr.Markdown("## 🗾 Aerial Image Upload")
                 in_aerial_images = gr.File(
                     label="Aerial Image Upload",
                     file_count="multiple",
                 )
-                gr.Markdown("## Optional Settings")
+                gr.Markdown("## ⚙️ Optional Settings")
                 with gr.Column():
                     gr.Markdown("""
                         ### Automatically downsample your aerial images to match the AI's expected resolution?
@@ -284,11 +284,11 @@ with gr.Blocks(title=browser_title) as demo:
                         value=api_configs.CONFIDENCE_THRESHOLD,
                         step=5,
                     )
-                submit_button = gr.Button(value="Upload Imagery")
+                submit_button = gr.Button(value="Upload Job")
 
             with gr.Column(visible=False) as upload_results:
                 gr.Markdown("## Upload Results")
-                out_payload = gr.Text(label="Task ID")
+                out_payload = gr.Text(label="Job ID")
                 out_message = gr.Text(label="Message")
 
             submit_button.click(
@@ -304,21 +304,21 @@ with gr.Blocks(title=browser_title) as demo:
                 #api_name="object_detection",
             )
 
-    with gr.Tab("Retrieve Results"):
-        gr.Markdown("## Enter Task ID")
+    with gr.Tab("Job Status/Results"):
+        gr.Markdown("## Enter Job ID")
         with gr.Column():
-            in_task_id = gr.Text(label="Task ID", show_label=False)
-            status_button = gr.Button(value="Get Task Status")
+            in_task_id = gr.Text(label="Job ID", show_label=False)
+            status_button = gr.Button(value="Get Job Status")
 
-        gr.Markdown("## Task Status")
+        gr.Markdown("## Job Status")
         with gr.Row():
             out_status = gr.Text(
-                label="Task Status",
+                label="Job Status",
                 show_label=False,
-                value="Awaiting Task ID above...",
+                value="Awaiting Job ID above...",
             )
             out_file = gr.File(
-                label="Download Your Results!",
+                label="Download your Results!",
                 value=None,
                 visible=False,
             )

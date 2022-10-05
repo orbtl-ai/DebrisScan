@@ -94,11 +94,51 @@ Once the Docker containers are running, the DebrisScan interface can be accessed
 opening your favorite web browser and navigating to the following URL:
 `http://localhost:8080/`.
 
-- INSERT PIC HERE!!!!
+- INSERT PIC HERE!!!!`
+
+There are two tabs in the DebrisScan interface: `Job Upload` and `Job Status`. By default
+you will be on the `Job Upload` tab.
+
+##### Job Upload
+Here you can batch upload your aerial images and
+`Submit Job` for processing. Optionally, you could also provide additional information
+about your flight altitude, camera, and/or drone model.
+
+This additional information will help if you want DebrisScan to resample your data
+to our AI model's optimal resolution for better performance.
+
+> **Warning**
+> DebrisScan's current models were trained on aerial imagery with a ground spacing
+> distance (GSD) of 2cm, and performance falls off the farther your imagery's GSD is from
+> 2cm. If your images have a different GSD, you can opt-in to optional resampling, which
+> can infer your images' GSD from the provided flight altitude and camera model information
+> (sensor height, width, and focal length)
+
+Futher, you can adjust the `Confidence Threshold` slider to adjust the minimum confidence
+threshold for an AI prediction to be kept in the final results. The default value for this
+slider is "40%" on a scale of (0-100% confidence), but this value can be adjusted to either
+allow more or less model predictions. A value of "0%" will keep all AI predictions, while
+a value of "100%" will keep almost no predictions.
+
+> **Note**
+> Increasing the `Confidence Threshold` slider is useful for filtering out false positives
+> (i.e., AI predictions that are not actually marine debris). However, it is important to
+> note that this comes with the trade-off of potentially filtering actual marine debris,
+> which often results in a higher rate of false negatives (i.e., actual marine debris that
+> is not detected by the AI). It is often useful to experiment with the `Confidence Threshold`
+> slider to find balance.
+
+The user will be prompted if the job was successful, and provided with a `task-id` that
+allows them to check the status of their job in the `Job Status/Results` tab by providing the
+`task-id`. Additionally, if the job has finished
 
 #### Check Processing Status
-- Status Tab
-- Flower Admin
+The 'Job Status/Results' tab will allow you to return to the DebrisScan at anytime in
+the future to check the status of your job or retrieve the results of your job using the
+`task-id` provided during `Job Upload`.
+
+- Status Tab Picture
+
 
 #### Retrieve and View Results
 - Status Tab
@@ -106,6 +146,7 @@ opening your favorite web browser and navigating to the following URL:
 #### View DebrisScan's Backend API Documentation (Optional)
 
 #### View DebrisScan's Admin Dashboard (Optional)
+- Flower Tab Picture
 
 ## Advanced Documentation
 **UNDER CONSTRUCTION!!**
