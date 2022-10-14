@@ -76,7 +76,7 @@ async def async_object_detection(
     return {
         upload_results: gr.update(visible=True),
         out_payload: str(task_id),
-        out_message: "Upload Successful! It may take our robots awhile to count all that debris, so you shouldn't wait around for them! Please save your Job ID (above) and return later to retrieve your results at the 'Retrive Results' tab above!"
+        out_message: "Upload Successful! It may take our robots awhile to count all those debris, so you shouldn't wait around for them! Please save your Job ID (above) and return later to retrieve your results at the 'Retrive Results' tab above!"
     }
 
 
@@ -172,7 +172,7 @@ browser_title = "DebrisScan Demo"
 html_header = """
     <div style="padding: 10px; border-radius: 10px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #FFFFFF;">Welcome to 🌊🥤<br/>DebrisScan 🤖📸<br/>(DEMO v0.05)</H1>
+            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #1e1e1e;">Welcome to 🌊🥤<br/>DebrisScan 🤖📸<br/>(DEMO v0.05)</H1>
             <img src="http://orbtl.ai/wp-content/uploads/2022/09/debrisscan_header2.jpg?raw=true" width="60%" />
         </div>
     </div>
