@@ -5,7 +5,7 @@ import json
 
 from PIL import Image
 
-# import aiofiles
+import aiofiles
 
 
 def security_checkpoint(
@@ -59,33 +59,28 @@ def security_checkpoint(
     return security_dict
 
 
-# async def async_file_save(task_id, file_uploads, dest):
-#     """A simple function designed to save a list of files to a destination
-#     asynchronously.
-#
-#     Inputs:
-#     - task_id: A string representing the task_id of the current task.
-#     - file_uploads: A list of UploadFile objects from the FastAPI request.
-#     - dest: A string representing the destination path to save the files to.
-#
-#     Returns:
-#     - None
-#
-#     TODO: Add error handling for if the destination directory does not exist,
-#         return result.
-#     """
-#     saved_images = 0
-#     for upload in file_uploads:
-#         image_path = join(dest, upload.orig_name)
-#         async with aiofiles.open(image_path, "wb") as to_write:
-#             await to_write.write(
-#                 await upload.read(1200000000)
-#             )  # async read, async write, 1.2 GB upload limit per image to start
-#         saved_images += 1
-#
-#     print(f"{task_id}: Saved {saved_images} of {len(file_uploads)} images.")
-#
-#     return None
+async def async_file_save(task_id, file_uploads, dest):
+    """A simple function designed to save a list of files to a destination
+    asynchronously.
+    Inputs:
+    - task_id: A string representing the task_id of the current task.
+    - file_uploads: A list of UploadFile objects from the FastAPI request.
+    - dest: A string representing the destination path to save the files to.
+    Returns:
+    - None
+    TODO: Add error handling for if the destination directory does not exist,
+        return result.
+    """
+    saved_images = 0
+    for upload in file_uploads:
+        image_path = join(dest, upload.orig_name)
+        async with aiofiles.open(image_path, "wb") as to_write:
+            await to_write.write(
+                await upload.read(1200000000)
+            )  # async read, async write, 1.2 GB upload limit per image to start
+        saved_images += 1
+    print(f"{task_id}: Saved {saved_images} of {len(file_uploads)} images.")
+    return None
 
 def nonasync_file_save(task_id, file_uploads, dest):
     """A simple function designed to save a list of files to a destination.

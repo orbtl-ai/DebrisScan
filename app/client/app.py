@@ -13,7 +13,7 @@ import gradio as gr
 from client.client_utils import (
     security_checkpoint,
     nonasync_file_save,
-    # async_file_save,
+    async_file_save,
     dump_user_submission_to_json,
 )
 from geoprocessor.tasks import celery_app
@@ -55,8 +55,8 @@ async def async_object_detection(
         mkdir(task_path)
 
         # Save the user-submitted images to the processing directory
-        nonasync_file_save(task_id, aerial_images, task_path)
-        # await async_file_save(task_id, aerial_images, task_path)
+        #nonasync_file_save(task_id, aerial_images, task_path)
+        await async_file_save(task_id, aerial_images, task_path)
 
         # save task metadata (user selections, key API config options, etc.)
         dump_user_submission_to_json(
@@ -172,7 +172,7 @@ browser_title = "DebrisScan Demo"
 html_header = """
     <div style="padding: 10px; border-radius: 10px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #1e1e1e;">Welcome to 🌊🥤<br/>DebrisScan 🤖📸<br/>(DEMO v0.05)</H1>
+            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #1e1e1e;">Welcome to 🌊🥤<br/>DebrisScan 🤖📸<br/>(beta v0.05)</H1>
             <img src="http://orbtl.ai/wp-content/uploads/2022/09/debrisscan_header2.jpg?raw=true" width="60%" />
         </div>
     </div>
@@ -186,7 +186,7 @@ html_header = """
 
 
 md_description = """
-    **DebrisScan API is an AI-based tool that automatically detects, classifies, and measures
+    **DebrisScan API is an app that automatically detects, classifies, and measures
     shoreline-stranded marine debris from aerial images. This demo allows you to upload
     your own aerial images (typically taken from a drone or aircraft) to be scanned for
     marine debris by our cutting-edge AI!**
@@ -231,10 +231,10 @@ with gr.Blocks(title=browser_title) as demo:
                     label="Aerial Image Upload",
                     file_count="multiple",
                 )
-                gr.Markdown("## ⚙️ Optional Settings")
+                gr.Markdown("## 🎛 Optional Settings")
                 with gr.Column():
                     gr.Markdown("""
-                        ### Automatically downsample your aerial images to match the AI's expected resolution?
+                        ### ⚙️ Automatically resample your aerial images to match our AI's expected resolution?
                         *This procedure requires us to know more about your imagery,
                         but it should improve your detection results by ensuring your
                         aerial image resolution matches the image resolution used to
@@ -267,7 +267,7 @@ with gr.Blocks(title=browser_title) as demo:
 
                 with gr.Column():
                     gr.Markdown("""
-                        ### Modify Confidence Threshold?
+                        ### ⚙️ Modify Confidence Threshold?
                         *Our detectors assign each detection a
                         'confidence score'. This setting filters all detections whose
                         confidence score is below the threshold. Lowering the threshold
@@ -305,12 +305,12 @@ with gr.Blocks(title=browser_title) as demo:
             )
 
     with gr.Tab("Job Status/Results"):
-        gr.Markdown("## Enter Job ID")
+        gr.Markdown("## 🧾 Enter Job ID")
         with gr.Column():
             in_task_id = gr.Text(label="Job ID", show_label=False)
             status_button = gr.Button(value="Get Job Status")
 
-        gr.Markdown("## Job Status")
+        gr.Markdown("## ⏱ Job Status")
         with gr.Row():
             out_status = gr.Text(
                 label="Job Status",
