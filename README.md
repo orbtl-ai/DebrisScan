@@ -84,7 +84,7 @@ opening your favorite web browser and navigating to the following URL:
 `http://localhost:8080/`.
 
 ![An image showing DebrisScan's Job Upload tab, which has multiple text boxes and
-slider bars that allow users to configure DebrisScan's settings.](https://github.com/orbtl-ai/DebrisScan/blob/main/static/debrisscan_v05_status_example.png)
+slider bars that allow users to configure DebrisScan's settings.](static/debrisscan_v05_status_example.png)
 
 There are two tabs in the DebrisScan interface: `Job Upload` and `Job Status/Results`.
 By default, the app launches on the `Job Upload` tab, which is shown in the image above.
@@ -124,7 +124,7 @@ waiting around for the AI to finish counting debris!
 
 ![An image showing DebrisScan's `Job Status/Results` tab, in which a two text boxes sit atop one
 another. The top box takes a user's job ID as input, and the bottom box returns
-information or files related to the job.](https://github.com/orbtl-ai/DebrisScan/blob/main/static/debrisscan_v05_status_example.png)
+information or files related to the job.](static/debrisscan_v05_status_example.png)
 
 #### Download Job's Results
 Once DebrisScan has completed your processing job the `Job Status/Results` tab will both display this status and return a zip file of your results. The zip file will contain
@@ -144,7 +144,7 @@ queue, results store, and the jobs themselves. This dashboard can be accessed on
 local machine by navigating to the following URL: `http://localhost:5555/`.
 
 ![An image showing DebrisScan's Administrative Dashboard with tabs to view
-worker, brokers, and tasks.](https://github.com/orbtl-ai/DebrisScan/blob/main/static/flower_example.png)
+worker, brokers, and tasks.](static/flower_example.png)
 
 ---
 ## Computer Vision Models
