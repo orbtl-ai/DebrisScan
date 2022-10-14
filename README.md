@@ -15,7 +15,6 @@ each object that are color-coded by type.](static/debrisscan_example.png)
 DebrisScan is a single component of a larger effort to operationalize advanced technology for measurement and management of marine debris. For more information on this larger effort and
 it's partners, please visit the [project's homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/).
 
----
 ## Key Features
 1. A complete, free, and open source environment for training and deploying deep
     learning-based object detection models.
@@ -27,15 +26,14 @@ it's partners, please visit the [project's homepage](https://coastalscience.noaa
 5. Detailed standing stock debris survey reports, maps, plots, and metadata to help
     understand shoreline debris accumulation and allow multi-date or multi-site comparison.
 
----
 ## Quick Start *(Local Installation)*
 Installing and deploying DebrisScan is very simple, and can be executed in XX steps for
 basic installation on your local system. However, users of DebrisScan should at least have
 basic familiarity with the command line, git, and preferably Docker too (optional).
 
 > **Note**
-> DebrisScan officially supports Windows 11 and Linux systems (AMD64 only). Windows 10
-> Intel-based MacOS systems may work but are not officially supported (see Warnings below).
+> DebrisScan officially supports Windows 11 and Linux systems (AMD64 only). Windows 10 and
+> Intel-based MacOS systems may work, but are not officially supported (see Warnings below).
 
 > **Warning**
 > DebrisScan will install and run on Windows 10 using the steps below, **but only when
@@ -46,11 +44,11 @@ basic familiarity with the command line, git, and preferably Docker too (optiona
 > DebrisScan does not officially support *any* ARM-based systems (e.g., Apple Silicon,
 > Raspberry Pi, etc.).
 
-### Step 1: Install Neccecary Software Dependencies
+### Step 1: Install Necessary Software Dependencies
 DebrisScan is designed to deploy simply on a wide range of operating systems and hardware
-configurations, ranging from your laptop to a high-capacity cloud computer. To
-accomplish these goals we distribute the DebrisScan's app codebase via GitHub (you are here!)
-and use [Docker](https://www.docker.com/) to install DebrisScan and all of it's
+configurations: ranging from your laptop to a high-capacity cloud computer. To
+accomplish these goals we distribute DebrisScan's codebase via GitHub (you are here!)
+and use [Docker](https://www.docker.com/) to install all of DebrisScan's
 necessary software dependencies.
 
 #### Git
@@ -67,7 +65,7 @@ git clone https://github.com/orbtl-ai/DebrisScan.git
 ```
 
 ### Step 3: Build and Run DebrisScan with Docker
-Once downloaded, navigate into the DebrisScan folder and execute the following command
+Once downloaded, navigate into the `DebrisScan/` folder and execute the following command
 from the root directory to simultaneously download the needed software dependencies, build,
 configure, and run the entire app:
 ```bash
@@ -134,7 +132,6 @@ will be delivered.
 
 Congrats! You have successfully installed and deployed DebrisScan on your local system.
 
----
 ## Advanced Documentation *(UNDER CONSTRUCTION!!)*
 
 ### View DebrisScan's Admin Dashboard (Optional)
@@ -146,7 +143,6 @@ local machine by navigating to the following URL: `http://localhost:5555/`.
 ![An image showing DebrisScan's Administrative Dashboard with tabs to view
 worker, brokers, and tasks.](static/flower_example.png)
 
----
 ## Computer Vision Models
 WARNING: Models are provided as-is. No warranty or accuracy is expressed or implied.
 
@@ -161,11 +157,9 @@ that was fine-tuned with a labeled marine debris data set. This is the default m
 used by DebrisScan as it has been found to offer competitive performance with larger
 models while being fast enough for CPU-based inference.
 
----
 ## License
 DebrisScan is licensed under the Apache License 2.0 found in the LICENSE file in the root directory of this repository.
 
----
 ## Credits
 DebrisScan is presented as a free, open source software under funding and support from
 [NOAA's National Centers for Coastal Ocean Science](https://coastalscience.noaa.gov/),
@@ -174,6 +168,5 @@ DebrisScan is presented as a free, open source software under funding and suppor
 
 DebrisScan is developed and maintained by [ORBTL AI](https://orbtl.ai).
 
----
 ## Contact
 For more information about DebrisScan itself, please contact [ORBTL AI](https://orbtl.ai/contact-us/).
