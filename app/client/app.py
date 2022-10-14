@@ -55,8 +55,8 @@ async def async_object_detection(
         mkdir(task_path)
 
         # Save the user-submitted images to the processing directory
-        #nonasync_file_save(task_id, aerial_images, task_path)
-        await async_file_save(task_id, aerial_images, task_path)
+        nonasync_file_save(task_id, aerial_images, task_path)
+        # await async_file_save(task_id, aerial_images, task_path)
 
         # save task metadata (user selections, key API config options, etc.)
         dump_user_submission_to_json(
@@ -214,7 +214,7 @@ md_article = """
 
 
 md_footer = """
-    For more information about DebrisScan, please visit the following links: [NOAA NCCOS Project Homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/) | [DebrisScan's Open GitHub Repo](https://github.com/orbtl-ai/debris-scan)
+    For more information about DebrisScan, please visit the following links: [NOAA NCCOS Project Homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/) | [DebrisScan's Open GitHub Repo](https://github.com/orbtl-ai/debrisscan)
 """
 
 
