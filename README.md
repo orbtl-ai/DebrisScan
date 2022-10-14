@@ -1,5 +1,4 @@
-# DebrisScan
-
+# 🌊🥤 DebrisScan: Automatically scan drone imagery for marine debris — with AI 🤖📸
 
 ## Introduction
 DebrisScan is a web-based app for automatically counting marine debris in your aerial
@@ -13,6 +12,10 @@ measurement and management of marine debris.
 along a complex shoreline image. The AI detections are made with boxes drawn around
 each object that are color-coded by type.](https://github.com/orbtl-ai/DebrisScan/blob/main/static/debrisscan_example.png)
 
+DebrisScan is a single component of a larger effort to operationalize advanced technology for measurement and management of marine debris. For more information on this larger effort and
+it's partners, please visit the [project's homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/).
+
+---
 ## Key Features
 1. A complete, free, and open source environment for training and deploying deep
     learning-based object detection models.
@@ -24,20 +27,7 @@ each object that are color-coded by type.](https://github.com/orbtl-ai/DebrisSca
 5. Detailed standing stock debris survey reports, maps, plots, and metadata to help
     understand shoreline debris accumulation and allow multi-date or multi-site comparison.
 
-## Computer Vision Models
-WARNING: Models are provided as-is. No warranty or accuracy is expressed or implied.
-
-This repo is not explicitly designed to host or distribute pre-trained computer vision
-models for marine debris. However, this repo does does contain an `app/tf_server/models/`
-folder which contains the following models:
-
-### efficientdet-d0 *(default)*
-An EfficientDet-d0 object detection model from the [Tensorflow Object Detection Model
-Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
-that was fine-tuned with a labeled marine debris data set. This is the default model
-used by DebrisScan as it has been found to offer competitive performance with larger
-models while being fast enough for CPU-based inference.
-
+---
 ## Quick Start *(Local Installation)*
 Installing and deploying DebrisScan is very simple, and can be executed in XX steps for
 basic installation on your local system. However, users of DebrisScan should at least have
@@ -70,14 +60,16 @@ To install Git, [follow the instructions for your operating system here](https:/
 To install Docker, [follow the instructions for your operating here](https://www.docker.com/products/docker-desktop/).
 
 ### Step 2: Download this Repo with Git
-To download the codebase you need to "clone" this repo to your local computer with
-the following command:
+To download the DebrisScan codebase you need to "clone" this repo to your local computer
+with the following command:
 ```bash
 git clone https://github.com/orbtl-ai/DebrisScan.git
 ```
 
 ### Step 3: Build and Run DebrisScan with Docker
-Once downloaded, navigate into the DebrisScan folder and execute the following command:
+Once downloaded, navigate into the DebrisScan folder and execute the following command
+from the root directory to simultaneously download the needed software dependencies, build,
+configure, and run the entire app:
 ```bash
 docker compose up --build
 ```
@@ -85,36 +77,30 @@ docker compose up --build
 > The first time you run this command it will take a while to download and install all
 > of the necessary software dependencies. However, subsequent runs will be much faster.
 
-> **Note**
->The `--build` flag is only needed the first time you run this command.
-
 ### Step 4: Access DebrisScan in your Browser
 #### Upload Data and Begin Processing
 Once the Docker containers are running, the DebrisScan interface can be accessed by
 opening your favorite web browser and navigating to the following URL:
 `http://localhost:8080/`.
 
-- INSERT PIC HERE!!!!`
+![An image showing DebrisScan's Job Upload tab, which has multiple text boxes and
+slider bars that allow users to configure DebrisScan's settings.](https://github.com/orbtl-ai/DebrisScan/blob/main/static/debrisscan_v05_status_example.png)
 
-There are two tabs in the DebrisScan interface: `Job Upload` and `Job Status`. By default
-you will be on the `Job Upload` tab.
+There are two tabs in the DebrisScan interface: `Job Upload` and `Job Status/Results`.
+By default, the app launches on the `Job Upload` tab, which is shown in the image above.
 
-##### Job Upload
-Here you can batch upload your aerial images and
-`Submit Job` for processing. Optionally, you could also provide additional information
-about your flight altitude, camera, and/or drone model.
-
-This additional information will help if you want DebrisScan to resample your data
-to our AI model's optimal resolution for better performance.
+### Step 5: Job Upload
+The `Job Upload` tab allows users to upload batches of aerial images for AI processing. Optionally, users can also provide additional information
+about flight altitude, camera, and/or drone model, which will allow DebrisScan to resample the imagery to match the AI's optimal resolutionour AI model's optimal resolution, increasing
+performance and accuracy.
 
 > **Warning**
 > DebrisScan's current models were trained on aerial imagery with a ground spacing
-> distance (GSD) of 2cm, and performance falls off the farther your imagery's GSD is from
-> 2cm. If your images have a different GSD, you can opt-in to optional resampling, which
-> can infer your images' GSD from the provided flight altitude and camera model information
-> (sensor height, width, and focal length)
+> distance (GSD) of 2cm, and performance decreases as the uploaded imagery's GSD diverges.
+> It is generally recommended for users to opt-in to `Optional Resampling`, which
+> can infer image GSD from user-provided `Flight Altitude` and `Sensor` information.
 
-Futher, you can adjust the `Confidence Threshold` slider to adjust the minimum confidence
+Further, users can adjust the `Confidence Threshold` slider to adjust the minimum confidence
 threshold for an AI prediction to be kept in the final results. The default value for this
 slider is "40%" on a scale of (0-100% confidence), but this value can be adjusted to either
 allow more or less model predictions. A value of "0%" will keep all AI predictions, while
@@ -128,37 +114,66 @@ a value of "100%" will keep almost no predictions.
 > is not detected by the AI). It is often useful to experiment with the `Confidence Threshold`
 > slider to find balance.
 
-The user will be prompted if the job was successful, and provided with a `task-id` that
-allows them to check the status of their job in the `Job Status/Results` tab by providing the
-`task-id`. Additionally, if the job has finished
+The user will be prompted if the job was submitted successfully and provided with a unique `Job ID` number that allows the job's status or results to be retrieved by returning to the `Job Status/Results` tab at any point in the future and providing the `Job ID` number.
 
-#### Check Processing Status
-The 'Job Status/Results' tab will allow you to return to the DebrisScan at anytime in
+#### Check Job's Processing Status
+The `Job Status/Results` tab will allow you to return to the DebrisScan at anytime in
 the future to check the status of your job or retrieve the results of your job using the
-`task-id` provided during `Job Upload`.
+`Job ID` provided during the `Job Upload` step. This is useful to prevent the user from
+waiting around for the AI to finish counting debris!
 
-- Status Tab Picture
+![An image showing DebrisScan's `Job Status/Results` tab, in which a two text boxes sit atop one
+another. The top box takes a user's job ID as input, and the bottom box returns
+information or files related to the job.](https://github.com/orbtl-ai/DebrisScan/blob/main/static/debrisscan_v05_status_example.png)
 
+#### Download Job's Results
+Once DebrisScan has completed your processing job the `Job Status/Results` tab will both display this status and return a zip file of your results. The zip file will contain
+the original images you uploaded, but with the AI's predictions drawn on the image and
+labeled by debris type and prediction confidence. Additionally, CSV and JSON reports
+will be delivered.
 
-#### Retrieve and View Results
-- Status Tab
+Congrats! You have successfully installed and deployed DebrisScan on your local system.
 
-#### View DebrisScan's Backend API Documentation (Optional)
+---
+## Advanced Documentation *(UNDER CONSTRUCTION!!)*
 
-#### View DebrisScan's Admin Dashboard (Optional)
-- Flower Tab Picture
+### View DebrisScan's Admin Dashboard (Optional)
+By default, DebrisScan will launch a Administrative Dashboard powered by Flower. This
+allows the user to view/control various aspects of the app's backend job processing
+queue, results store, and the jobs themselves. This dashboard can be accessed on your
+local machine by navigating to the following URL: `http://localhost:5555/`.
 
-## Advanced Documentation
-**UNDER CONSTRUCTION!!**
+![An image showing DebrisScan's Administrative Dashboard with tabs to view
+worker, brokers, and tasks.](https://github.com/orbtl-ai/DebrisScan/blob/main/static/flower_example.png)
 
+---
+## Computer Vision Models
+WARNING: Models are provided as-is. No warranty or accuracy is expressed or implied.
+
+This repo is not explicitly designed to host or distribute pre-trained computer vision
+models for marine debris. However, this repo does does contain an `app/tf_server/models/`
+folder which contains the following models:
+
+### efficientdet-d0 *(default)*
+An EfficientDet-d0 object detection model from the [Tensorflow Object Detection Model
+Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
+that was fine-tuned with a labeled marine debris data set. This is the default model
+used by DebrisScan as it has been found to offer competitive performance with larger
+models while being fast enough for CPU-based inference.
+
+---
+## License
+DebrisScan is licensed under the Apache License 2.0 found in the LICENSE file in the root directory of this repository.
+
+---
 ## Credits
-DebrisScan was developed by [ORBTL AI](https://orbtl.ai) with funding and support from
-the [NOAA's National Centers for Coastal Ocean Science](https://coastalscience.noaa.gov/),
+DebrisScan is presented as a free, open source software under funding and support from
+[NOAA's National Centers for Coastal Ocean Science](https://coastalscience.noaa.gov/),
 [Oregon State University](https://oregonstate.edu), and
-[NOAA's Marine Debris Program](https://marinedebris.noaa.gov/). DebrisScan is a single
-component of a larger effort to operationalize advanced technologies for the measurement
-and management of marine debris. For more information on the project, please visit the
-[project's homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/).
+[NOAA's Marine Debris Program](https://marinedebris.noaa.gov/).
 
+DebrisScan is developed and maintained by [ORBTL AI](https://orbtl.ai).
+
+---
 ## Contact
-For more information on DebrisScan, please contact [ORBTL AI](https://orbtl.ai/contact-us/).
+For more information about DebrisScan itself, please contact [ORBTL AI](https://orbtl.ai/contact-us/).
