@@ -82,7 +82,7 @@ opening your favorite web browser and navigating to the following URL:
 `http://localhost:8080/`.
 
 ![An image showing DebrisScan's Job Upload tab, which has multiple text boxes and
-slider bars that allow users to configure DebrisScan's settings.](static/debrisscan_v05_status_example.png)
+slider bars that allow users to configure DebrisScan's settings.](static/debrisscan_v05_example.png)
 
 There are two tabs in the DebrisScan interface: `Job Upload` and `Job Status/Results`.
 By default, the app launches on the `Job Upload` tab, which is shown in the image above.
