@@ -7,7 +7,7 @@ class BaseConfig:
     """
 
     # Specify a list of approved image file types (list of strings).
-    APPROVED_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'tif', 'tiff']
+    APPROVED_IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.tif', '.tiff']
 
     # Specify the API's object detection model input image's geospatial ground spacing
     # distance (GSD) in centimeters (float).

@@ -1,4 +1,4 @@
-from os import getenv
+from os import getenv, listdir
 from os.path import join, splitext
 from shutil import make_archive
 import time
@@ -37,9 +37,11 @@ celery_app = Celery()
 celery_app.config_from_envvar("CELERY_CONFIG_MODULE")
 # celery.config_from_object(celery_config)
 
+APPROVED_IMG_TYPES = api_configs.APPROVED_IMAGE_TYPES
+
 
 @celery_app.task(name="object_detection")  # Named task
-def object_detection(task_folder, images_to_process):
+def object_detection(task_folder):
     """
     """
 
@@ -51,7 +53,10 @@ def object_detection(task_folder, images_to_process):
     with open(join(task_folder, "user_submission.json"), "rb") as sub:
         user_sub = json.load(sub)
 
-    print(user_sub)
+    images_to_process = [
+        f for f in listdir(task_folder) if splitext(f)[1].lower() in APPROVED_IMG_TYPES
+    ]
+    print(f"Images to Process: {len(images_to_process)}")
 
     # -----------------------------
     # BEGIN INFERENCE ON EACH IMAGE
@@ -72,7 +77,7 @@ def object_detection(task_folder, images_to_process):
             # ------------------------------------------
             # DOWNSAMPLE TO API's GSD (IF USER OPTED-IN)
             # ------------------------------------------
-            preprocessed_path = i_path  # This is the fall back if resampling is declined
+            preprocessed_path = i_path  # the fallback option if resampling is declined
             if str(user_sub["resample_images"]) == "True":
                 print("Begin Downsampling...")
                 # --- ESTIMATE IMAGE GSD ---
@@ -86,7 +91,7 @@ def object_detection(task_folder, images_to_process):
                     )
 
                 max_gsd = calc_max_gsd(
-                    user_sub["flight_agl"],
+                    user_sub["flight_agl_meters"],
                     image_height,
                     image_width,
                     sensor_params,
