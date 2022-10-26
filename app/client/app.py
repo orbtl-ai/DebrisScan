@@ -7,6 +7,7 @@ import uuid
 
 import asyncio
 import aiofiles
+from aiofiles import os
 
 from celery import states
 from celery.result import AsyncResult
@@ -64,7 +65,7 @@ async def async_object_detection(
     loop = asyncio.get_running_loop()
 
     # Utilize asyncio for the IO-bound tasks
-    task_path = await loop.run_in_executor(
+    await loop.run_in_executor(
         None, save_tmp_with_pil, task_path, aerial_images
     )
 
