@@ -1,48 +1,44 @@
 """This module contains the API client's utility functions."""
 
-from os.path import join, splitext
-from io import BytesIO
+from os.path import join
 import json
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 import aiofiles
-from aiofiles import os
 
 
-async def async_file_save(task_id, dest, file_uploads):
-    """A simple function designed to save a list of files to a destination
-    using both async read and async write operations, this should be awaited.
+def save_tmp_with_pil(task_path, file_uploads):
+    """
+    This function is designed to be encapsulated in some sort of threadpool or
+    task queue for async processing.
 
     Parameters:
-    - task_id: A string representing the task_id of the current task.
-    - file_uploads: A list of UploadFile objects from the FastAPI request.
-    - dest: A string representing the destination path to save the files to.
+    - task_path: The directory on disk to save the file_uploads.
+    - file_uploads: a list of NamedTemporaryFile wrappers received by Gradio's input
+        "File" component.
 
     Returns:
     - None
 
     TODO:
-      - Add error handling for if the destination directory does not exist,
-        return result.
-      - Allow the upload limit to be passed as param, handle if too large (pass?)
+    - Could this be an async def that runs an async for loop? It is intended to run
+        in a asyncio threadpool...
+    - Error handling for if destination doesn't exist OR if not an image (important!)
     """
 
-    task_path = join(dest, task_id)
-    await aiofiles.os.mkdir(task_path)
+    for upload in file_uploads:
+        try:
+            img = Image.open(upload.name)
+        except UnidentifiedImageError:
+            print(f"File {upload.name} is not a supported image. Skipping...")
+            continue
 
-    for upload in file_uploads:  # TODO: asyncio.gather() this??
-        upload.file.seek(0)
+        file_path = join(task_path, upload.orig_name)
+        img.save(file_path, format=img.format)
+        print(f"Saved {upload.orig_name}...")
 
-        img = Image.open(BytesIO(upload.file.read())).tobytes()
-        print(f" img type: {type(img)}")
-
-        file_path = join(task_path, splitext(upload.orig_name)[0] + ".jpg")
-        print(file_path)
-        async with aiofiles.open(file_path, 'wb') as f:
-            await f.write(img)
-
-    return task_path
+    return None
 
 
 async def async_dump_user_submission_to_json(

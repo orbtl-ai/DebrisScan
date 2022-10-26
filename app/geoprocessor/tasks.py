@@ -37,7 +37,8 @@ celery_app = Celery()
 celery_app.config_from_envvar("CELERY_CONFIG_MODULE")
 # celery.config_from_object(celery_config)
 
-APPROVED_IMAGE_TYPES = api_configs.APPROVED_IMAGE_TYPES
+APPROVED_IMG_TYPES = api_configs.APPROVED_IMAGE_TYPES
+
 
 @celery_app.task(name="object_detection")  # Named task
 def object_detection(task_folder):
@@ -52,19 +53,8 @@ def object_detection(task_folder):
     with open(join(task_folder, "user_submission.json"), "rb") as sub:
         user_sub = json.load(sub)
 
-    print(user_sub)
-
-    print(task_folder)
-
-    for f in listdir(task_folder):
-        print(f)
-        if splitext(f)[1] in APPROVED_IMAGE_TYPES:
-            print("APPROVED!")
-        else:
-            print(f"NOT APPROVED: {splitext(f)}, {splitext(f)[0]}, {splitext(f)[1]}")
-
     images_to_process = [
-        f for f in listdir(task_folder) if splitext(f)[1] in APPROVED_IMAGE_TYPES
+        f for f in listdir(task_folder) if splitext(f)[1].lower() in APPROVED_IMG_TYPES
     ]
     print(f"Images to Process: {len(images_to_process)}")
 
@@ -87,7 +77,7 @@ def object_detection(task_folder):
             # ------------------------------------------
             # DOWNSAMPLE TO API's GSD (IF USER OPTED-IN)
             # ------------------------------------------
-            preprocessed_path = i_path  # This is the fall back if resampling is declined
+            preprocessed_path = i_path  # the fallback option if resampling is declined
             if str(user_sub["resample_images"]) == "True":
                 print("Begin Downsampling...")
                 # --- ESTIMATE IMAGE GSD ---
@@ -101,7 +91,7 @@ def object_detection(task_folder):
                     )
 
                 max_gsd = calc_max_gsd(
-                    user_sub["flight_agl"],
+                    user_sub["flight_agl_meters"],
                     image_height,
                     image_width,
                     sensor_params,

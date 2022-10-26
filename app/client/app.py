@@ -1,10 +1,12 @@
 """ This module spins up the main Gradio/FastAPI web app."""
 
-from os import getenv, mkdir
+from os import getenv
 from os.path import join
-import aiofiles
 import json
 import uuid
+
+import asyncio
+import aiofiles
 
 from celery import states
 from celery.result import AsyncResult
@@ -12,7 +14,7 @@ from celery.result import AsyncResult
 import gradio as gr
 
 from client.client_utils import (
-    async_file_save,
+    save_tmp_with_pil,
     async_dump_user_submission_to_json,
 )
 from geoprocessor.tasks import celery_app
@@ -28,34 +30,68 @@ async def async_object_detection(
     aerial_images, resample, flight_agl, sensor_platform, confidence_threshold
 ):
     """
-    Takes a user-submission, verifies it, returns a task-id,
-    and kicks off a Celery worker.
+    An async function that receives a user upload via Gradio, saves the imagery
+    and user submission to a working directory, and forwards the CPU- and GPU-intensive
+    processing to a Celery worker.
+
+    Parameters:
+    - aerial_images: A list of NamedTemporaryFiles supplied by the user via Gradio's
+        input "File" component.
+    - resample: A boolean indicating whether the user wants to resample their imagery
+        to match the detection model's target GSD.
+    - flight_agl: A float representing the user's flight altitude above ground level
+        in meters.
+    - sensor_platform: A string representing the user's UAV platform or camera model.
+        Used to derive sensor-specific parameters for resampling.
+    - confidence_threshold: A float representing the minimum confidence threshold at
+        which the model's detections are kept.
+
+    Returns:
+    - A dictionary containing the following:
+        - upload_results: A gr.update() which toggles the visibility of Gradio's
+            output "Text" component for displaying the below...
+        - out_payload: The unique UUID4 task_id associated with the Celery task.
+        - out_message: A string message written to inform the user of the task's status,
+            next steps, success, warnings, errors, etc.
     """
-    # Create a unique task id
+    # Create a unique task id that will follow this job from start-to-finish
     task_id = str(uuid.uuid4())
+    print(f"Initizalizing task {task_id}...")
+
+    task_path = join(APP_DATA, task_id)
+    await aiofiles.os.mkdir(task_path)
+
+    loop = asyncio.get_running_loop()
 
     # Utilize asyncio for the IO-bound tasks
-    task_path = await async_file_save(task_id, APP_DATA, aerial_images)
+    task_path = await loop.run_in_executor(
+        None, save_tmp_with_pil, task_path, aerial_images
+    )
 
-    # save task metadata (user selections, key API config options, etc.)
     await async_dump_user_submission_to_json(
         task_id, task_path, aerial_images, resample, flight_agl, sensor_platform,
         confidence_threshold,
     )
 
-    # Utilize Celery task queue for the CPU-bound tasks
+    # Celery task queue for the CPU-bound tasks
     celery_app.send_task(
         "object_detection",
         args=[task_path],
         task_id=task_id,
     )
 
-    print(f"Task {task_id} has been sent to Celery!")
+    print(f"Task {task_id} complete and sent to Celery.")
+
+    out_msg = (
+        "Upload Successful! It may take our robots awhile to count all those debris, "
+        "so you shouldn't wait around for them! Please save your Job ID (above) and "
+        "return later to retrieve your results at the 'Retrive Results' tab above!"
+    )
 
     return {
         upload_results: gr.update(visible=True),
         out_payload: str(task_id),
-        out_message: "Upload Successful! It may take our robots awhile to count all those debris, so you shouldn't wait around for them! Please save your Job ID (above) and return later to retrieve your results at the 'Retrive Results' tab above!"
+        out_message: out_msg
     }
 
 
@@ -70,6 +106,7 @@ async def get_task_status(task_id):
     Returns:
     - JSONResponse with information about the job's status, errors, and/or results.
     """
+
     result = AsyncResult(task_id, app=celery_app)
 
     result_state = str(result.state)
@@ -79,7 +116,10 @@ async def get_task_status(task_id):
     result_file = str(result.get()) if result.state == states.SUCCESS else None
 
     if result_error is None and result_state == "PENDING":
-        out_message = "PENDING: Your submission has been received and is currently waiting in a queue for processing. Please check back later."
+        out_message = (
+            "PENDING: Your submission has been received and is currently waiting in a "
+            "queue for processing. Please check back later."
+        )
 
         return {
             out_status: gr.update(value=out_message, visible=True),
@@ -87,7 +127,10 @@ async def get_task_status(task_id):
         }
 
     elif result_error is None and result_state == "STARTED":
-        out_message = "STARTED: Your submission is currently being processed! Please check back later."
+        out_message = (
+            "STARTED: Your submission is currently being processed! "
+            "Please check back later."
+        )
 
         return {
             out_status: gr.update(value=out_message, visible=True),
@@ -95,7 +138,11 @@ async def get_task_status(task_id):
         }
 
     elif result_error is None and result_state == "SUCCESS":
-        out_message = "SUCCESS: Your submission has been processed successfully! Please click the 'Download Results' button to the right to download your results."
+        out_message = (
+            "SUCCESS: Your submission has been processed successfully! "
+            "Please click the 'Download Results' button to the right to "
+            "download your results."
+        )
 
         return {
             out_status: gr.update(value=out_message, visible=True),
@@ -111,8 +158,10 @@ async def get_task_status(task_id):
         }
 
     else:
-        out_message = f"{result.id}'s job status can not be retrieved reliably... \
-            please contact the project's administrators."
+        out_message = (
+            f"{result.id}'s job status can not be retrieved reliably... "
+            "please contact the project's administrators."
+        )
 
         return {
             out_status: gr.update(value=out_message, visible=True),
@@ -148,21 +197,10 @@ def toggle_resampling(choice):
 
 browser_title = "DebrisScan Demo"
 
-html_header = """
-    <div style="padding: 10px; border-radius: 10px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <H1 style="margin: 0px; padding: 0px; font-size: 48px; font-weight: bold; color: #1e1e1e;">Welcome to 🌊🥤<br/>DebrisScan 🤖📸<br/>(beta v0.05)</H1>
-            <img src="http://orbtl.ai/wp-content/uploads/2022/09/debrisscan_header2.jpg?raw=true" width="60%" />
-        </div>
-    </div>
+md_title = """
+    #  Welcome to DebrisScan
+    # 🌊🥤 (*DEMO v0.05*) 📸 🤖
 """
-
-
-#md_title = """ # Welcome to 🌊🥤
-#                # DebrisScan 📸 🤖
-#                # (*DEMO v0.05*)
-#"""
-
 
 md_description = """
     **DebrisScan API is an app that automatically detects, classifies, and measures
@@ -185,8 +223,8 @@ html_images = """
 
 
 md_article = """
-    DebrisScan was developed by [ORBTL AI](https://orbtl.ai) with partnership and funding
-    from [Oregon State University](https://oregonstate.edu/),
+    DebrisScan was developed by [ORBTL AI](https://orbtl.ai) with partnership and
+    funding from [Oregon State University](https://oregonstate.edu/),
     [NOAA's National Centers for Coastal Ocean Science](https://coastalscience.noaa.gov/),
     and [NOAA's Marine Debris Program](https://marinedebris.noaa.gov/).
 """
@@ -198,8 +236,7 @@ md_footer = """
 
 
 with gr.Blocks(title=browser_title) as demo:
-    #gr.Markdown(md_title)
-    gr.HTML(html_header)
+    gr.Markdown(md_title)
     gr.Markdown(md_description)
 
     with gr.Tab("Job Upload"):
@@ -280,7 +317,6 @@ with gr.Blocks(title=browser_title) as demo:
                     confidence_threshold,
                 ],
                 outputs=[upload_results, out_payload, out_message],
-                #api_name="object_detection",
             )
 
     with gr.Tab("Job Status/Results"):
@@ -305,7 +341,6 @@ with gr.Blocks(title=browser_title) as demo:
             get_task_status,
             inputs=[in_task_id],
             outputs=[out_status, out_file],
-            #api_name="retrieve_task_status",
         )
 
     gr.Markdown(md_article)
@@ -314,6 +349,5 @@ with gr.Blocks(title=browser_title) as demo:
 
 
 # gr.close_all()
-# conc_count: "Number of worker threads that will be processing requests concurrently."
-# demo.queue(concurrency_count=1)
+demo.queue(concurrency_count=1)
 demo.launch(server_name="0.0.0.0", server_port=8080)
