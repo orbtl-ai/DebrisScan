@@ -2,6 +2,7 @@
 
 from os import getenv, mkdir
 from os.path import join
+import aiofiles
 import json
 import uuid
 
@@ -11,10 +12,8 @@ from celery.result import AsyncResult
 import gradio as gr
 
 from client.client_utils import (
-    security_checkpoint,
-    nonasync_file_save,
     async_file_save,
-    dump_user_submission_to_json,
+    async_dump_user_submission_to_json,
 )
 from geoprocessor.tasks import celery_app
 from configs.api_config import api_configs
@@ -35,43 +34,23 @@ async def async_object_detection(
     # Create a unique task id
     task_id = str(uuid.uuid4())
 
-    # Security check
-    security_report = security_checkpoint(
-        task_id, aerial_images, api_configs.APPROVED_IMAGE_TYPES
+    # Utilize asyncio for the IO-bound tasks
+    task_path = await async_file_save(task_id, APP_DATA, aerial_images)
+
+    # save task metadata (user selections, key API config options, etc.)
+    await async_dump_user_submission_to_json(
+        task_id, task_path, aerial_images, resample, flight_agl, sensor_platform,
+        confidence_threshold,
     )
 
-    # NOTE: the api is currently strict on security, if a single file upload fails the
-    # security_checkpoint() then the entire submission is rejected.
-    if int(security_report['NUM_REJECTED_UPLOADS']) > 0:
-        print(f"Security report failed! Task {task_id} was rejected.")
-        return {
-            upload_results: gr.update(visible=True),
-            out_payload: "UPLOAD FAILED! Please check your submission and try again.",
-            out_message: str(security_report['REJECTED_UPLOADS'])
-        }
-    else:
-        # Set up a task directory and save files
-        task_path = join(APP_DATA, str(task_id))
-        mkdir(task_path)
+    # Utilize Celery task queue for the CPU-bound tasks
+    celery_app.send_task(
+        "object_detection",
+        args=[task_path],
+        task_id=task_id,
+    )
 
-        # Save the user-submitted images to the processing directory
-        nonasync_file_save(task_id, aerial_images, task_path)
-        # await async_file_save(task_id, aerial_images, task_path)
-
-        # save task metadata (user selections, key API config options, etc.)
-        dump_user_submission_to_json(
-            aerial_images, resample, flight_agl, sensor_platform,
-            confidence_threshold, task_path
-        )
-
-        # kick-off the heavy processing with Celery...
-        celery_app.send_task(
-            "object_detection",
-            args=[task_path, security_report['ACCEPTED_IMAGES']],
-            task_id=task_id,
-        )
-
-        print(f"Task {task_id} has been sent to Celery!")
+    print(f"Task {task_id} has been sent to Celery!")
 
     return {
         upload_results: gr.update(visible=True),

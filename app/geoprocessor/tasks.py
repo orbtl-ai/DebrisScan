@@ -1,4 +1,4 @@
-from os import getenv
+from os import getenv, listdir
 from os.path import join, splitext
 from shutil import make_archive
 import time
@@ -37,9 +37,10 @@ celery_app = Celery()
 celery_app.config_from_envvar("CELERY_CONFIG_MODULE")
 # celery.config_from_object(celery_config)
 
+APPROVED_IMAGE_TYPES = api_configs.APPROVED_IMAGE_TYPES
 
 @celery_app.task(name="object_detection")  # Named task
-def object_detection(task_folder, images_to_process):
+def object_detection(task_folder):
     """
     """
 
@@ -52,6 +53,20 @@ def object_detection(task_folder, images_to_process):
         user_sub = json.load(sub)
 
     print(user_sub)
+
+    print(task_folder)
+
+    for f in listdir(task_folder):
+        print(f)
+        if splitext(f)[1] in APPROVED_IMAGE_TYPES:
+            print("APPROVED!")
+        else:
+            print(f"NOT APPROVED: {splitext(f)}, {splitext(f)[0]}, {splitext(f)[1]}")
+
+    images_to_process = [
+        f for f in listdir(task_folder) if splitext(f)[1] in APPROVED_IMAGE_TYPES
+    ]
+    print(f"Images to Process: {len(images_to_process)}")
 
     # -----------------------------
     # BEGIN INFERENCE ON EACH IMAGE
