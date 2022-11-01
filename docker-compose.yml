@@ -13,7 +13,7 @@ services:
   client:
     build:
       context: .
-      dockerfile: docker/Local/Dockerfile.Client
+      dockerfile: Docker/Local/Dockerfile.Client
       args:
         - APP_DATA=${DOCKER_APP_DATA}
     container_name: debrisscan-client
@@ -35,7 +35,7 @@ services:
         read_only: false
     env_file:
       - .env.dev
-    command: gradio client/app.py # enables "reload mode" as of Gradio 3.1
+    command: gradio client/app.py  # enables "reload mode" as of Gradio 3.1
     #command: python /app/client/app.py
     depends_on:
       - backend
@@ -43,7 +43,7 @@ services:
   geoprocessor:
     build:
       context: .
-      dockerfile: docker/Local/Dockerfile.Geoprocessor
+      dockerfile: Docker/Local/Dockerfile.Geoprocessor
     container_name: debrisscan-geoprocessor
     links:
       - backend:backend
@@ -62,7 +62,6 @@ services:
     env_file:
       - .env.dev
     command: celery -A geoprocessor.tasks.celery_app worker --loglevel=info --concurrency=1 #--uid=nobody --gid=nogroup
-    #command: ["sh", "/app/geoprocessor/celery_entrypoint.sh"]
     depends_on:
       - backend
       - client
@@ -72,7 +71,7 @@ services:
   tf-server:
     build:
       context: .
-      dockerfile: docker/Local/Dockerfile.TFServing
+      dockerfile: Docker/Local/Dockerfile.TFServing
     container_name: debrisscan-tf-server
     links:
       - backend:backend
@@ -108,7 +107,7 @@ services:
   flower:
     image: mher/flower:0.9.7
     container_name: debrisscan-flower
-    command: ["flower", "--broker=${CELERY_BROKER_URL}", "--port=5555", "--inspect_timeout=10000"] # the "Inspect method... failed" is still occuring. Waiting for worker? Feed it the app directly?
+    #command: ["flower", "--broker=${CELERY_BROKER_URL}", "--port=5555", "--inspect_timeout=10000"] # the "Inspect method... failed" is still occuring. Waiting for worker? Feed it the app directly?
     links:
       - backend:backend
     networks:
@@ -119,8 +118,6 @@ services:
       - .env.dev
     depends_on:
       - backend
-      - client
-      - geoprocessor
 
 networks:
   debrisscan-network:
