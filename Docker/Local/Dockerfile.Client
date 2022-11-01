@@ -1,4 +1,4 @@
-FROM osgeo/gdal:ubuntu-small-3.3.3
+FROM python:3.10-slim-buster
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -9,13 +9,10 @@ RUN rm -rf /var/lib/apt/lists/*
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-COPY app/geoprocessor/requirements.txt /tmp/requirements.txt
+COPY Docker/Local/requirements.client.txt /tmp/requirements.txt
 
 RUN pip install --no-cache-dir \
     -r /tmp/requirements.txt
-#NOTE: following line is needed after pandas added to
-#      geo-requirements.txt.
-#RUN pip install --upgrade numpy
 RUN rm -rf /root/.cache/pip/*
 
 #NOTE: these are for prod, bind mounting /app_data for local dev does not honor these
@@ -23,4 +20,9 @@ RUN rm -rf /root/.cache/pip/*
 #RUN mkdir /app_data
 #RUN chown -R nobody:nogroup /app_data
 
-ENV PYTHONPATH "${PYTHONPATH}:/app/"
+ENV PYTHONPATH "${PYTHONPATH}:/"
+
+# NOTE: needed to get 'gradio app.py' to run
+WORKDIR /app
+
+# CMD ["python", "/app/client/app.py"]
