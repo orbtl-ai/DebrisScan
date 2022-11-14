@@ -13,23 +13,23 @@ along a complex shoreline image. The AI detections are made with boxes drawn aro
 each object that are color-coded by type.](static/debrisscan_example.png)
 
 DebrisScan is a single component of a larger effort to operationalize advanced technology for measurement and management of marine debris. For more information on this larger effort and
-it's partners, please visit the [project's homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/).
+its partners, please visit the [project's homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/).
 
 ## Key Features
 1. A complete, free, and open source environment for training and deploying deep
     learning-based object detection models.
-2. State-of-the-art computer vision models fine-tuned for the automatic detection of
+1. State-of-the-art computer vision models fine-tuned for the automatic detection of
     shoreline stranded marine debris from aerial images.
-3. A user friendly interface for interacting with the object detection models.
-4. A powerful and well-documented backend REST API for automating bulk uploads or
+1. A user friendly interface for interacting with the object detection models.
+1. A powerful and well-documented backend REST API for automating bulk uploads or
     integrating DebrisScan into existing apps, software, or workflows.
-5. Detailed standing stock debris survey reports, maps, plots, and metadata to help
+1. Detailed standing stock debris survey reports, maps, plots, and metadata to help
     understand shoreline debris accumulation and allow multi-date or multi-site comparison.
 
 ## Quick Start *(Local Installation)*
 Installing and deploying DebrisScan is very simple, and can be executed in XX steps for
 basic installation on your local system. However, users of DebrisScan should at least have
-basic familiarity with the command line, git, and preferably Docker too (optional).
+basic familiarity with the command line, Git, and preferably Docker too (optional).
 
 > **Note**
 > DebrisScan officially supports Windows 11 and Linux systems (AMD64 only). Windows 10 and
@@ -46,7 +46,7 @@ basic familiarity with the command line, git, and preferably Docker too (optiona
 
 ### Step 1: Install Necessary Software Dependencies
 DebrisScan is designed to deploy simply on a wide range of operating systems and hardware
-configurations: ranging from your laptop to a high-capacity cloud computer. To
+configurations, ranging from your laptop to a high-capacity cloud computer. To
 accomplish these goals we distribute DebrisScan's codebase via GitHub (you are here!)
 and use [Docker](https://www.docker.com/) to install all of DebrisScan's
 necessary software dependencies.
