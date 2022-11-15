@@ -89,7 +89,7 @@ By default, the app launches on the `Job Upload` tab, which is shown in the imag
 
 ### Step 5: Job Upload
 The `Job Upload` tab allows users to upload batches of aerial images for AI processing. Optionally, users can also provide additional information
-about flight altitude, camera, and/or drone model, which will allow DebrisScan to resample the imagery to match the AI's optimal resolutionour AI model's optimal resolution, increasing
+about flight altitude, camera, and/or drone model, which will allow DebrisScan to resample the imagery to match the AI's optimal resolution, increasing
 performance and accuracy.
 
 > **Warning**
