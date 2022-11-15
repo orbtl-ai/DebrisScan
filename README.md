@@ -100,7 +100,7 @@ performance and accuracy.
 
 Further, users can adjust the `Confidence Threshold` slider to adjust the minimum confidence
 threshold for an AI prediction to be kept in the final results. The default value for this
-slider is "40%" on a scale of (0-100% confidence), but this value can be adjusted to either
+slider is "40%" (on a scale of 0-100% confidence), but this value can be adjusted to either
 allow more or less model predictions. A value of "0%" will keep all AI predictions, while
 a value of "100%" will keep almost no predictions.
 
