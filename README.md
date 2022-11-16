@@ -134,7 +134,7 @@ Congrats! You have successfully installed and deployed DebrisScan on your local 
 ## Advanced Documentation *(UNDER CONSTRUCTION!!)*
 
 ### View DebrisScan's Admin Dashboard (Optional)
-By default, DebrisScan will launch a Administrative Dashboard powered by Flower. This
+By default, DebrisScan will launch an Administrative Dashboard powered by Flower. This
 allows the user to view/control various aspects of the app's backend job processing
 queue, results store, and the jobs themselves. This dashboard can be accessed on your
 local machine by navigating to the following URL: `http://localhost:5555/`.
@@ -168,4 +168,4 @@ DebrisScan is presented as a free, open source software under funding and suppor
 DebrisScan is developed and maintained by [ORBTL AI](https://orbtl.ai).
 
 ## Contact
-For more information about DebrisScan itself, please contact [ORBTL AI](https://orbtl.ai/contact-us/).
+For more information about DebrisScan itself, please [contact ORBTL AI](https://orbtl.ai/contact-us/).
