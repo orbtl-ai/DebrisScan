@@ -115,7 +115,7 @@ a value of "100%" will keep almost no predictions.
 The user will be prompted if the job was submitted successfully and provided with a unique `Job ID` number that allows the job's status or results to be retrieved by returning to the `Job Status/Results` tab at any point in the future and providing the `Job ID` number.
 
 #### Check Job's Processing Status
-The `Job Status/Results` tab will allow you to return to the DebrisScan at anytime in
+The `Job Status/Results` tab will allow you to return to the DebrisScan interface at any time in
 the future to check the status of your job or retrieve the results of your job using the
 `Job ID` provided during the `Job Upload` step. This is useful to prevent the user from
 waiting around for the AI to finish counting debris!
