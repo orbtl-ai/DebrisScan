@@ -4,7 +4,7 @@
 DebrisScan is a web-based app for automatically counting marine debris in your aerial
 images (typically collected from drones). The app is designed to be flexible and
 user-friendly. Further, DebrisScan and its underlying technologies are completely free
-and open source; eliminating startup costs and lowering the barriers of entry for
+and open source, eliminating startup costs and lowering the barriers of entry for
 researchers and citizen scientists alike to begin applying AI workflows to the
 measurement and management of marine debris.
 
