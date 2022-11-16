@@ -55,7 +55,7 @@ necessary software dependencies.
 To install Git, [follow the instructions for your operating system here](https://git-scm.com/downloads).
 
 #### Docker
-To install Docker, [follow the instructions for your operating here](https://www.docker.com/products/docker-desktop/).
+To install Docker, [follow the instructions for your operating system here](https://www.docker.com/products/docker-desktop/).
 
 ### Step 2: Download this Repo with Git
 To download the DebrisScan codebase you need to "clone" this repo to your local computer
