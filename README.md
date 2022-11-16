@@ -125,10 +125,9 @@ another. The top box takes a user's job ID as input, and the bottom box returns
 information or files related to the job.](static/debrisscan_v05_status_example.png)
 
 #### Download Job's Results
-Once DebrisScan has completed your processing job the `Job Status/Results` tab will both display this status and return a zip file of your results. The zip file will contain
-the original images you uploaded, but with the AI's predictions drawn on the image and
-labeled by debris type and prediction confidence. Additionally, CSV and JSON reports
-will be delivered.
+Once DebrisScan has completed processing your job, the `Job Status/Results` tab will both display this status and return a zip file of your results. 
+The zip file will contain the original images you uploaded, but with the AI's predictions drawn on the image and
+labeled by debris type and prediction confidence. Additionally, CSV and JSON reports will be delivered.
 
 Congrats! You have successfully installed and deployed DebrisScan on your local system.
 
