@@ -168,4 +168,4 @@ DebrisScan is presented as a free, open source software under funding and suppor
 DebrisScan is developed and maintained by [ORBTL AI](https://orbtl.ai).
 
 ## Contact
-For more information about DebrisScan itself, please [contact ORBTL AI](https://orbtl.ai/contact-us/).
+For more information about DebrisScan itself, please [contact ORBTL AI](https://orbtl.ai/consultation/).
