@@ -1,7 +1,7 @@
 # 🌊🥤 DebrisScan: Automatically Scan Drone Imagery for Marine Debris — Using AI 🤖📸
 
 ## Introduction
-DebrisScan is a web-based app for automatically counting marine debris in your aerial
+DebrisScan is a web-based app for automatically identifying marine debris in your aerial
 images (typically collected from drones). The app is designed to be flexible and
 user-friendly. Further, DebrisScan and its underlying technologies are completely free
 and open source, eliminating startup costs and lowering the barriers of entry for
@@ -27,7 +27,7 @@ its partners, please visit the [project's homepage](https://coastalscience.noaa.
     understand shoreline debris accumulation and allow multi-date or multi-site comparison.
 
 ## Quick Start *(Local Installation)*
-Installing and deploying DebrisScan is very simple, and can be executed in XX steps for
+Installing and deploying DebrisScan is very simple, and can be executed in a few easy steps for
 basic installation on your local system. However, users of DebrisScan should at least have
 basic familiarity with the command line, Git, and preferably Docker too (optional).
 
