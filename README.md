@@ -20,15 +20,16 @@ information on this larger effort and its partners, please visit the
 [project's homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/).
 
 ## Key Features
-1. A complete, free, and open source environment for training and deploying deep
-    learning-based object detection models.
-1. State-of-the-art computer vision models fine-tuned for the automatic detection of
-    shoreline stranded marine debris from aerial images.
+1. A complete, free, and open source environment for training and deploying 
+deep learning-based object detection models.
+1. State-of-the-art computer vision models fine-tuned for the automatic 
+detection of shoreline stranded marine debris from aerial images.
 1. A user friendly interface for interacting with the object detection models.
-1. A powerful and well-documented backend REST API for automating bulk uploads or
-    integrating DebrisScan into existing apps, software, or workflows.
-1. Detailed standing stock debris survey reports, maps, plots, and metadata to help
-    understand shoreline debris accumulation and allow multi-date or multi-site comparison.
+1. A powerful and well-documented backend REST API for automating bulk uploads 
+or integrating DebrisScan into existing apps, software, or workflows.
+1. Detailed standing stock debris survey reports, maps, plots, and metadata to 
+help understand shoreline debris accumulation and allow multi-date or multi-
+site comparison.
 
 ## Quick Start *(Local Installation)*
 Installing and deploying DebrisScan is very simple, and can be executed in a few easy steps for
