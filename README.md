@@ -1,4 +1,4 @@
-# 🌊🥤 DebrisScan: Automatically Scan Drone Imagery for Marine Debris — Using AI 🤖📸
+# <h1>🌊🥤 DebrisScan: Automatically Scan Drone Imagery for Marine Debris — Using AI 🤖📸</h1>
 
 ## Introduction
 DebrisScan is a web-based app for automatically identifying marine debris in your aerial
