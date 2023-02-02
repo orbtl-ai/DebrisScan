@@ -9,9 +9,10 @@ and open source, eliminating startup costs and lowering the barriers of entry fo
 researchers and citizen scientists alike to begin applying AI workflows to the
 measurement and management of marine debris.
 
-![An image showing AI detections of plastic, wood, and other manmade marine debris
-along a complex shoreline image. The AI detections are made with boxes drawn around
-each object that are color-coded by type.](static/debrisscan_example.png)
+![An image showing AI detections of plastic, wood, and other manmade marine 
+debris along a complex shoreline image. The AI detections are made with boxes 
+drawn around each object that are color-coded by 
+type.](static/debrisscan_example.png)
 
 DebrisScan is a single component of a larger effort to operationalize advanced technology for measurement and management of marine debris. For more information on this larger effort and
 its partners, please visit the [project's homepage](https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/).
