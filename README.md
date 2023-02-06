@@ -50,58 +50,62 @@ and preferably Docker too (optional).
 > configuration steps 
 > [See this link for more information](https://www.docker.com/blog/wsl-2-gpu-support-for-docker-desktop-on-nvidia-gpus/).
 
-> **Warning**
-> DebrisScan does not officially support *any* ARM-based systems (e.g., Apple Silicon, Raspberry Pi, etc.).
+> **Warning** DebrisScan does not officially support *any* ARM-based systems 
+> (e.g., Apple Silicon, Raspberry Pi, etc.).
 
 
 ### Step 1: Install Necessary Software Dependencies
-DebrisScan is designed to deploy simply on a wide range of operating systems and hardware
-configurations, ranging from your laptop to a high-capacity cloud computer. To
-accomplish these goals we distribute DebrisScan's codebase via GitHub (you are here!)
-and use [Docker](https://www.docker.com/) to install all of DebrisScan's
-necessary software dependencies.
+DebrisScan is designed to deploy simply on a wide range of operating systems 
+and hardware configurations, ranging from your laptop to a high-capacity cloud 
+computer. To accomplish these goals we distribute DebrisScan's codebase via 
+GitHub (you are here!) and use [Docker](https://www.docker.com/) to install all 
+of DebrisScan's necessary software dependencies.
 
 
 #### Git
-To install Git, [follow the instructions for your operating system here](https://git-scm.com/downloads).
+To install Git, [follow the instructions for your operating system 
+here](https://git-scm.com/downloads).
 
 
 #### Docker
-To install Docker, [follow the instructions for your operating system here](https://www.docker.com/products/docker-desktop/).
+To install Docker, [follow the instructions for your operating system 
+here](https://www.docker.com/products/docker-desktop/).
 
 
 ### Step 2: Download this Repo with Git
-To download the DebrisScan codebase you need to "clone" this repo to your local computer
-with the following command:
+To download the DebrisScan codebase you need to "clone" this repo to your local 
+computer with the following command:
 ```bash
 git clone https://github.com/orbtl-ai/DebrisScan.git
 ```
 
 
 ### Step 3: Build and Run DebrisScan with Docker
-Once downloaded, navigate into the `DebrisScan/` folder and execute the following command
-from the root directory to simultaneously download the needed software dependencies, build,
-configure, and run the entire app:
+Once downloaded, navigate into the `DebrisScan/` folder and execute the 
+following command from the root directory to simultaneously download the needed 
+software dependencies, build, configure, and run the entire app:
 ```bash
 docker compose up --build
 ```
 > **Note**
-> The first time you run this command it will take a while to download and install all
-> of the necessary software dependencies. However, subsequent runs will be much faster.
+> The first time you run this command it will take a while to download and 
+> install all of the necessary software dependencies. However, subsequent runs 
+> will be much faster.
 
 
 ### Step 4: Access DebrisScan in your Browser
 
 #### Upload Data and Begin Processing
-Once the Docker containers are running, the DebrisScan interface can be accessed by
-opening your favorite web browser and navigating to the following URL:
-`http://localhost:8080/`.
+Once the Docker containers are running, the DebrisScan interface can be 
+accessed by opening your favorite web browser and navigating to the following 
+URL:`http://localhost:8080/`.
 
-![An image showing DebrisScan's Job Upload tab, which has multiple text boxes and
-slider bars that allow users to configure DebrisScan's settings.](static/debrisscan_v05_example.png)
+![An image showing DebrisScan's Job Upload tab, which has multiple text boxes 
+and slider bars that allow users to configure DebrisScan's settings.](static/debrisscan_v05_example.png)
 
-There are two tabs in the DebrisScan interface: `Job Upload` and `Job Status/Results`.
-By default, the app launches on the `Job Upload` tab, which is shown in the image above.
+There are two tabs in the DebrisScan interface: `Job Upload` and `Job 
+Status/Results`. By default, the app launches on the `Job Upload` tab, which is 
+shown in the image above.
 
 
 ### Step 5: Job Upload
