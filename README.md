@@ -190,4 +190,4 @@ DebrisScan is developed and maintained by [ORBTL AI](https://orbtl.ai).
 
 
 ## Contact
-For more information about DebrisScan itself, please [contact ORBTL AI](https://orbtl.ai/consultation/).
+For more information about DebrisScan itself, please [contact ORBTL AI](https://orbtl.ai/contact/).
