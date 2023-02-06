@@ -48,8 +48,7 @@ basic familiarity with the command line, Git, and preferably Docker too (optiona
 > [See this link for more information](https://www.docker.com/blog/wsl-2-gpu-support-for-docker-desktop-on-nvidia-gpus/).
 
 > **Warning**
-> DebrisScan does not officially support *any* ARM-based systems (e.g., Apple Silicon,
-> Raspberry Pi, etc.).
+> DebrisScan does not officially support *any* ARM-based systems (e.g., Apple Silicon, Raspberry Pi, etc.).
 
 
 ### Step 1: Install Necessary Software Dependencies
