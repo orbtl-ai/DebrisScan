@@ -34,17 +34,20 @@ site comparison.
 
 
 ## Quick Start *(Local Installation)*
-Installing and deploying DebrisScan is very simple, and can be executed in a few easy steps for
-basic installation on your local system. However, users of DebrisScan should at least have
-basic familiarity with the command line, Git, and preferably Docker too (optional).
+Installing and deploying DebrisScan is very simple, and can be executed in a 
+few easy steps for basic installation on your local system. However, users of 
+DebrisScan should at least have basic familiarity with the command line, Git, 
+and preferably Docker too (optional).
 
 > **Note**
-> DebrisScan officially supports Windows 11 and Linux systems (AMD64 only). Windows 10 and
-> Intel-based MacOS systems may work, but are not officially supported (see Warnings below).
+> DebrisScan officially supports Windows 11 and Linux systems (AMD64 only). 
+> Windows 10 and > Intel-based MacOS systems may work, but are not officially 
+> supported (see Warnings below).
 
 > **Warning**
-> DebrisScan will install and run on Windows 10 using the steps below, **but only when
-> utilizing a CPU.** Utilizing Docker with a GPU requires extra configuration steps
+> DebrisScan will install and run on Windows 10 using the steps below, **but 
+> only when utilizing a CPU.** Utilizing Docker with a GPU requires extra 
+> configuration steps 
 > [See this link for more information](https://www.docker.com/blog/wsl-2-gpu-support-for-docker-desktop-on-nvidia-gpus/).
 
 > **Warning**
