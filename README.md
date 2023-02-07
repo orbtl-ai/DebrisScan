@@ -109,21 +109,25 @@ shown in the image above.
 
 
 ### Step 5: Job Upload
-The `Job Upload` tab allows users to upload batches of aerial images for AI processing. Optionally, users can also provide additional information
-about flight altitude, camera, and/or drone model, which will allow DebrisScan to resample the imagery to match the AI's optimal resolution, increasing
+The `Job Upload` tab allows users to upload batches of aerial images for AI 
+processing. Optionally, users can also provide additional information about 
+flight altitude, camera, and/or drone model, which will allow DebrisScan to 
+resample the imagery to match the AI's optimal resolution, increasing
 performance and accuracy.
 
 > **Warning**
-> DebrisScan's current models were trained on aerial imagery with a ground spacing
-> distance (GSD) of 2cm, and performance decreases as the uploaded imagery's GSD diverges.
-> It is generally recommended for users to opt-in to `Optional Resampling`, which
-> can infer image GSD from user-provided `Flight Altitude` and `Sensor` information.
+> DebrisScan's current models were trained on aerial imagery with a ground 
+> spacing distance (GSD) of 2cm, and performance decreases as the uploaded 
+> imagery's GSD diverges. It is generally recommended for users to opt-in to 
+> `Optional Resampling`, which can infer image GSD from user-provided `Flight 
+> Altitude` and `Sensor` information.
 
-Further, users can adjust the `Confidence Threshold` slider to adjust the minimum confidence
-threshold for an AI prediction to be kept in the final results. The default value for this
-slider is "40%" (on a scale of 0-100% confidence), but this value can be adjusted to either
-allow more or less model predictions. A value of "0%" will keep all AI predictions, while
-a value of "100%" will keep almost no predictions.
+Further, users can adjust the `Confidence Threshold` slider to adjust the 
+minimum confidence threshold for an AI prediction to be kept in the final 
+results. The default value for this slider is "40%" (on a scale of 0-100% 
+confidence), but this value can be adjusted to either allow more or less model 
+predictions. A value of "0%" will keep all AI predictions, while a value of 
+"100%" will keep almost no predictions.
 
 > **Note**
 > Increasing the `Confidence Threshold` slider is useful for filtering out false positives
