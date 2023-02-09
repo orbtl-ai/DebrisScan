@@ -50,8 +50,9 @@ and preferably Docker too (optional).
 > configuration steps 
 > [See this link for more information](https://www.docker.com/blog/wsl-2-gpu-support-for-docker-desktop-on-nvidia-gpus/).
 
-> **Warning** DebrisScan does not officially support *any* ARM-based systems 
-> (e.g., Apple Silicon, Raspberry Pi, etc.).
+> **Warning** 
+> DebrisScan does not officially support *any* ARM-based systems (e.g., Apple 
+> Silicon, Raspberry Pi, etc.).
 
 
 ### Step 1: Install Necessary Software Dependencies
@@ -130,14 +131,18 @@ predictions. A value of "0%" will keep all AI predictions, while a value of
 "100%" will keep almost no predictions.
 
 > **Note**
-> Increasing the `Confidence Threshold` slider is useful for filtering out false positives
-> (i.e., AI predictions that are not actually marine debris). However, it is important to
-> note that this comes with the trade-off of potentially filtering actual marine debris,
-> which often results in a higher rate of false negatives (i.e., actual marine debris that
-> is not detected by the AI). It is often useful to experiment with the `Confidence Threshold`
+> Increasing the `Confidence Threshold` slider is useful for filtering out 
+> false positives (i.e., AI predictions that are not actually marine debris). 
+> However, it is important to note that this comes with the trade-off of 
+> potentially filtering actual marine debris, which often results in a higher 
+> rate of false negatives (i.e., actual marine debris that is not detected by 
+> the AI). It is often useful to experiment with the `Confidence Threshold` 
 > slider to find balance.
 
-The user will be prompted if the job was submitted successfully and provided with a unique `Job ID` number that allows the job's status or results to be retrieved by returning to the `Job Status/Results` tab at any point in the future and providing the `Job ID` number.
+The user will be prompted if the job was submitted successfully and provided 
+with a unique `Job ID` number that allows the job's status or results to be 
+retrieved by returning to the `Job Status/Results` tab at any point in the 
+future and providing the `Job ID` number.
 
 
 #### Check Job's Processing Status
