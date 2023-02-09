@@ -146,20 +146,24 @@ future and providing the `Job ID` number.
 
 
 #### Check Job's Processing Status
-The `Job Status/Results` tab will allow you to return to the DebrisScan interface at any time in
-the future to check the status of your job or retrieve the results of your job using the
-`Job ID` provided during the `Job Upload` step. This is useful to prevent the user from
-waiting around for the AI to finish counting debris!
+The `Job Status/Results` tab will allow you to return to the DebrisScan 
+interface at any time in the future to check the status of your job or retrieve 
+the results of your job using the `Job ID` provided during the `Job Upload` 
+step. This is useful to prevent the user from waiting around for the AI to 
+finish counting debris!
 
-![An image showing DebrisScan's `Job Status/Results` tab, in which a two text boxes sit atop one
-another. The top box takes a user's job ID as input, and the bottom box returns
-information or files related to the job.](static/debrisscan_v05_status_example.png)
+![An image showing DebrisScan's `Job Status/Results` tab, in which a two text 
+boxes sit atop one another. The top box takes a user's job ID as input, and the 
+bottom box returns information or files related to the 
+job.](static/debrisscan_v05_status_example.png)
 
 
 #### Download Job's Results
-Once DebrisScan has completed processing your job, the `Job Status/Results` tab will both display this status and return a zip file of your results. 
-The zip file will contain the original images you uploaded, but with the AI's predictions drawn on the image and
-labeled by debris type and prediction confidence. Additionally, CSV and JSON reports will be delivered.
+Once DebrisScan has completed processing your job, the `Job Status/Results` tab 
+will both display this status and return a zip file of your results. The zip 
+file will contain the original images you uploaded, but with the AI's 
+predictions drawn on the image and labeled by debris type and prediction 
+confidence. Additionally, CSV and JSON reports will be delivered.
 
 Congrats! You have successfully installed and deployed DebrisScan on your local system.
 
