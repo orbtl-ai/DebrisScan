@@ -49,8 +49,9 @@ and preferably Docker too (optional).
 > **Warning**
 > DebrisScan will install and run on Windows 10 using the steps below, **but 
 > only when utilizing a CPU.** Utilizing Docker with a GPU requires extra 
-> configuration steps 
-> [See this link for more information](https://www.docker.com/blog/wsl-2-gpu-support-for-docker-desktop-on-nvidia-gpus/).
+> configuration steps. [See this link for more information][Docker info].
+> 
+> [Docker info]: https://www.docker.com/blog/wsl-2-gpu-support-for-docker-desktop-on-nvidia-gpus/
 
 > **Warning** 
 > DebrisScan does not officially support *any* ARM-based systems (e.g., Apple 
