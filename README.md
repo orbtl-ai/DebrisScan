@@ -16,8 +16,8 @@ type.](static/debrisscan_example.png)
 
 DebrisScan is a single component of a larger effort to operationalize advanced 
 technology for measurement and management of marine debris. For more 
-information on this larger effort and its partners, please visit the 
-[project's homepage][project homepage].
+information on this larger effort and its partners, please visit the [project's 
+homepage][project homepage].
 
 [project homepage]: https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/
 
