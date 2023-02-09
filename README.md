@@ -165,7 +165,8 @@ file will contain the original images you uploaded, but with the AI's
 predictions drawn on the image and labeled by debris type and prediction 
 confidence. Additionally, CSV and JSON reports will be delivered.
 
-Congrats! You have successfully installed and deployed DebrisScan on your local system.
+Congrats! You have successfully installed and deployed DebrisScan on your local 
+system.
 
 
 ## Advanced Documentation *(UNDER CONSTRUCTION!!)*
