@@ -12,7 +12,9 @@ applying AI workflows to the measurement and management of marine debris.
 ![An image showing AI detections of plastic, wood, and other manmade marine 
 debris along a complex shoreline image. The AI detections are made with boxes 
 drawn around each object that are color-coded by 
-type.](static/debrisscan_example.png)
+type.][ai-image]
+
+[ai-image]: static/debrisscan_example.png
 
 DebrisScan is a single component of a larger effort to operationalize advanced 
 technology for measurement and management of marine debris. For more 
@@ -109,7 +111,10 @@ accessed by opening your favorite web browser and navigating to the following
 URL:`http://localhost:8080/`.
 
 ![An image showing DebrisScan's Job Upload tab, which has multiple text boxes 
-and slider bars that allow users to configure DebrisScan's settings.](static/debrisscan_v05_example.png)
+and slider bars that allow users to configure DebrisScan's 
+settings.][upl-image]
+
+[upl-image]: static/debrisscan_v05_example.png
 
 There are two tabs in the DebrisScan interface: `Job Upload` and `Job 
 Status/Results`. By default, the app launches on the `Job Upload` tab, which is 
@@ -159,10 +164,12 @@ the results of your job using the `Job ID` provided during the `Job Upload`
 step. This is useful to prevent the user from waiting around for the AI to 
 finish counting debris!
 
-![An image showing DebrisScan's `Job Status/Results` tab, in which a two text 
+![An image showing DebrisScan's `Job Status/Results` tab, in which two text 
 boxes sit atop one another. The top box takes a user's job ID as input, and the 
 bottom box returns information or files related to the 
-job.](static/debrisscan_v05_status_example.png)
+job.][results-image]
+
+[results-image]: static/debrisscan_v05_status_example.png
 
 
 #### Download Job's Results
