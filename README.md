@@ -75,7 +75,9 @@ here][gitdnl].
 
 #### Docker
 To install Docker, [follow the instructions for your operating system 
-here](https://www.docker.com/products/docker-desktop/).
+here][Dockerdnl].
+
+[Dockerdnl]: https://www.docker.com/products/docker-desktop/
 
 
 ### Step 2: Download this Repo with Git
