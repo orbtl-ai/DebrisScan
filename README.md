@@ -101,7 +101,7 @@ docker compose up --build
 > will be much faster.
 
 
-### Step 4: Access DebrisScan in your Browser
+### Step 4: Access DebrisScan in Your Browser
 
 #### Upload Data and Begin Processing
 Once the Docker containers are running, the DebrisScan interface can be 
