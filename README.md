@@ -68,7 +68,9 @@ of DebrisScan's necessary software dependencies.
 
 #### Git
 To install Git, [follow the instructions for your operating system 
-here](https://git-scm.com/downloads).
+here][gitdnl]. 
+
+[gitdnl]: https://git-scm.com/downloads
 
 
 #### Docker
