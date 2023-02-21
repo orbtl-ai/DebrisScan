@@ -193,7 +193,9 @@ dashboard can be accessed on your local machine by navigating to the following
 URL: `http://localhost:5555/`.
 
 ![An image showing DebrisScan's Administrative Dashboard with tabs to view 
-worker, brokers, and tasks.](static/flower_example.png)
+worker, brokers, and tasks.][admin-image]
+
+[admin-image]: static/flower_example.png
 
 
 ## Computer Vision Models
@@ -201,13 +203,13 @@ WARNING: Models are provided as-is. No warranty or accuracy is expressed or
 implied.
 
 This repo is not explicitly designed to host or distribute pre-trained computer 
-vision models for marine debris. However, this repo does does contain an 
+vision models for marine debris. However, this repo does contain an 
 `app/tf_server/models/` folder which contains the following models:
 
 
 ### efficientdet-d0 *(default)*
-An EfficientDet-d0 object detection model from the [Tensorflow Object Detection Model
-Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
+An EfficientDet-d0 object detection model from the [Tensorflow Object Detection 
+Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
 that was fine-tuned with a labeled marine debris data set. This is the default 
 model used by DebrisScan as it has been found to offer competitive performance 
 with larger models while being fast enough for CPU-based inference.
