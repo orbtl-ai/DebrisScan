@@ -213,10 +213,12 @@ vision models for marine debris. However, this repo does contain an
 
 ### efficientdet-d0 *(default)*
 An EfficientDet-d0 object detection model from the [Tensorflow Object Detection 
-Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
-that was fine-tuned with a labeled marine debris data set. This is the default 
-model used by DebrisScan as it has been found to offer competitive performance 
-with larger models while being fast enough for CPU-based inference.
+Model Zoo][Tensorflow-link] that was fine-tuned with a labeled marine debris 
+data set. This is the default model used by DebrisScan as it has been found to 
+offer competitive performance with larger models while being fast enough for 
+CPU-based inference.
+
+[Tensorflow-link]: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md
 
 
 ## License
