@@ -1,5 +1,8 @@
-<h1>🌊🥤 DebrisScan: Automatically Scan Drone Imagery for Marine Debris — Using AI 
-🤖📸</h1> 
+<h1>
+🌊🥤 DebrisScan: Automatically Scan Drone Imagery for Marine Debris — Using AI 
+🤖📸
+</h1> 
+
 
 ## Introduction
 DebrisScan is a web-based app for automatically identifying marine debris in 
@@ -11,17 +14,16 @@ applying AI workflows to the measurement and management of marine debris.
 
 ![An image showing AI detections of plastic, wood, and other manmade marine 
 debris along a complex shoreline image. The AI detections are made with boxes 
-drawn around each object that are color-coded by 
-type.][ai-image]
+drawn around each object that are color-coded by type.][ai-image]
 
 [ai-image]: static/debrisscan_example.png
 
 DebrisScan is a single component of a larger effort to operationalize advanced 
 technology for measurement and management of marine debris. For more 
 information on this larger effort and its partners, please visit the [project's 
-homepage][project homepage].
+homepage][project-homepage].
 
-[project homepage]: https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/
+[project-homepage]: https://coastalscience.noaa.gov/project/using-unmanned-aircraft-systems-machine-learning-and-polarimetric-imaging-to-develop-a-system-for-enhanced-marine-debris-detection-and-removal/
 
 
 ## Key Features
@@ -51,9 +53,9 @@ and preferably Docker too (optional).
 > **Warning**
 > DebrisScan will install and run on Windows 10 using the steps below, **but 
 > only when utilizing a CPU.** Utilizing Docker with a GPU requires extra 
-> configuration steps. [See this link for more information][Docker info].
+> configuration steps. [See this link for more information][Docker-info].
 > 
-> [Docker info]: https://www.docker.com/blog/wsl-2-gpu-support-for-docker-desktop-on-nvidia-gpus/
+> [Docker-info]: https://www.docker.com/blog/wsl-2-gpu-support-for-docker-desktop-on-nvidia-gpus/
 
 > **Warning** 
 > DebrisScan does not officially support *any* ARM-based systems (e.g., Apple 
@@ -64,22 +66,24 @@ and preferably Docker too (optional).
 DebrisScan is designed to deploy simply on a wide range of operating systems 
 and hardware configurations, ranging from your laptop to a high-capacity cloud 
 computer. To accomplish these goals we distribute DebrisScan's codebase via 
-GitHub (you are here!) and use [Docker](https://www.docker.com/) to install all 
-of DebrisScan's necessary software dependencies.
+GitHub (you are here!) and use [Docker][Docker-link] to install all 
+of DebrisScan's necessary software dependencies. 
+
+[Docker-link]: https://www.docker.com/
 
 
 #### Git
 To install Git, [follow the instructions for your operating system 
-here][gitdnl]. 
+here][git-dnl]. 
 
-[gitdnl]: https://git-scm.com/downloads
+[git-dnl]: https://git-scm.com/downloads
 
 
 #### Docker
 To install Docker, [follow the instructions for your operating system 
-here][Dockerdnl].
+here][Docker-dnl].
 
-[Dockerdnl]: https://www.docker.com/products/docker-desktop/
+[Docker-dnl]: https://www.docker.com/products/docker-desktop/
 
 
 ### Step 2: Download this Repo with Git
