@@ -227,10 +227,15 @@ in the root directory of this repository.
 
 
 ## Credits
-DebrisScan is presented as a free, open source software under funding and support from
-[NOAA's National Centers for Coastal Ocean Science](https://coastalscience.noaa.gov/),
-[Oregon State University](https://oregonstate.edu), and
-[NOAA's Marine Debris Program](https://marinedebris.noaa.gov/).
+DebrisScan is presented as a free, open source software under funding and 
+support from [NOAA's National Centers for Coastal Ocean Science]
+[NOAA-Coastal-link], [Oregon State University][OSU-link], and [NOAA's Marine 
+Debris Program][Program-link].
+
+[NOAA-Coastal-link]: https://coastalscience.noaa.gov/ 
+[OSU-link]: https://oregonstate.edu 
+[Program-link]: https://marinedebris.noaa.gov/ 
+
 
 DebrisScan is developed and maintained by [ORBTL AI](https://orbtl.ai).
 
