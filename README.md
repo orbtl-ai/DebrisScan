@@ -32,7 +32,7 @@ deep learning-based object detection models.
 1. State-of-the-art computer vision models fine-tuned for the automatic 
 detection of shoreline stranded marine debris from aerial images.
 1. A user friendly interface for interacting with the object detection models.
-1. A powerful and well-documented backend REST API for automating bulk uploads 
+1. A powerful and well-documented backend REST API for automating bulk uploads  
 or integrating DebrisScan into existing apps, software, or workflows.
 1. Detailed standing stock debris survey reports, maps, plots, and metadata to 
 help understand shoreline debris accumulation and allow multi-date or multi-
@@ -74,9 +74,9 @@ of DebrisScan's necessary software dependencies.
 
 #### Git
 To install Git, [follow the instructions for your operating system 
-here][git-dnl]. 
+here][Git-dnl]. 
 
-[git-dnl]: https://git-scm.com/downloads
+[Git-dnl]: https://git-scm.com/downloads
 
 
 #### Docker
@@ -103,7 +103,7 @@ docker compose up --build
 ```
 > **Note**
 > The first time you run this command it will take a while to download and 
-> install all of the necessary software dependencies. However, subsequent runs 
+> install all the necessary software dependencies. However, subsequent runs 
 > will be much faster.
 
 
