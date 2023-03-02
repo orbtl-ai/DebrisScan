@@ -237,7 +237,9 @@ State University][OSU-link], and [NOAA's Marine Debris Program][Program-link].
 [Program-link]: https://marinedebris.noaa.gov/ 
 
 
-DebrisScan is developed and maintained by [ORBTL AI](https://orbtl.ai).
+DebrisScan is developed and maintained by [ORBTL AI][ORBTL-AI-link].
+
+[ORBTL-AI-link]: https://orbtl.ai
 
 
 ## Contact
