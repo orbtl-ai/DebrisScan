@@ -12,7 +12,9 @@ are completely free and open source, eliminating startup costs and lowering the
 barriers of entry for researchers and citizen scientists alike to begin 
 applying AI workflows to the measurement and management of marine debris.
 
-![image showing AI detections][ai-image]
+![An image showing AI detections of plastic, wood, and other manmade marine 
+debris along a complex shoreline image. The AI detections are made with boxes 
+drawn around each object that are color-coded by type.][ai-image]
 
 [ai-image]: static/debrisscan_example.png
 
