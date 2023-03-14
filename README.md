@@ -202,10 +202,12 @@ backend job processing queue, results store, and the jobs themselves. This
 dashboard can be accessed on your local machine by navigating to the following 
 URL: `http://localhost:5555/`.
 
-![An image showing DebrisScan's Administrative Dashboard with tabs to view 
-worker, brokers, and tasks.][admin-image]
+![Image showing DebrisScan's Administrative Dashboard.][admin-image]
 
 [admin-image]: static/flower_example.png
+
+***An image showing DebrisScan's Administrative Dashboard with tabs to view 
+worker, brokers, and tasks.***
 
 
 ## Computer Vision Models
