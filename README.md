@@ -228,6 +228,27 @@ CPU-based inference.
 
 [Tensorflow-link]: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md
 
+## Media
+
+### Technical Report | May 2023 | NOAA
+[Uncrewed Aircraft Systems, Machine Learning, and Polarimetric Imaging for 
+Enhanced Marine Debris Shoreline Surveys][NOAA-2023-Tech-Report-link]
+
+[NOAA-2023-Tech-Report-link]: https://repository.library.noaa.gov/view/noaa/50345
+
+
+### Article | May 2022 | NOAA
+[Marine Debris Detection with UAS, Machine Learning, and Polarimetric 
+Imaging][NOAA-2022-Article-link]
+
+[NOAA-2022-Article-link]: https://uxsrto.research.noaa.gov/marine-debris-detection-with-uas-machine-learning-and-polarimetric-imaging/
+
+
+### Article | Dec 2021 | NOAA
+[Machine Learning Collaboration Yields New Methods to Measure Shoreline Marine 
+Debris][NOAA-2021-Article-link]
+
+[NOAA-2021-Article-link]: https://coastalscience.noaa.gov/news/machine-learning-collaboration-leads-to-new-methods-to-measure-shoreline-marine-debris/
 
 ## License
 DebrisScan is licensed under the Apache License 2.0 found in the LICENSE file 
