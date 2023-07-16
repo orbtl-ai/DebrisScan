@@ -82,7 +82,7 @@ services:
       - debrisscan-network
     volumes:
       - type: bind
-        source: /home/ross/Documents/app_data
+        source: ~/Documents/app_data
         target: /app_data
         read_only: false
     #environment:
