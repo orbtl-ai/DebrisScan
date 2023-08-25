@@ -14,8 +14,6 @@ services:
     build:
       context: .
       dockerfile: Docker/Local/Dockerfile.Client
-      args:
-        - APP_DATA=${DOCKER_APP_DATA}
     container_name: debrisscan-client
     links:
       - backend:backend

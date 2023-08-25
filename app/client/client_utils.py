@@ -1,6 +1,6 @@
 """This module contains the API client's utility functions."""
 
-from os.path import join
+from os.path import join, basename
 import json
 
 from PIL import Image, UnidentifiedImageError
@@ -34,9 +34,10 @@ def save_tmp_with_pil(task_path, file_uploads):
             print(f"File {upload.name} is not a supported image. Skipping...")
             continue
 
-        file_path = join(task_path, upload.orig_name)
+        filename = basename(upload.name)
+        file_path = join(task_path, filename)
         img.save(file_path, format=img.format)
-        print(f"Saved {upload.orig_name}...")
+        print(f"Saved {file_path}...")
 
     return None
 
