@@ -53,10 +53,18 @@ def object_detection(task_folder):
     with open(join(task_folder, "user_submission.json"), "rb") as sub:
         user_sub = json.load(sub)
 
+    print(f"User Submission: {user_sub}")
+
     images_to_process = [
         f for f in listdir(task_folder) if splitext(f)[1].lower() in APPROVED_IMG_TYPES
     ]
     print(f"Images to Process: {len(images_to_process)}")
+    
+    if len(images_to_process) == 0:
+        # TODO: how do we flow this out to the user?
+        raise Exception("No valid images found in task folder.")
+    
+    
 
     # -----------------------------
     # BEGIN INFERENCE ON EACH IMAGE

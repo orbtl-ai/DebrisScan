@@ -755,8 +755,9 @@ def plot_bboxes_on_image(image_path, labels, color_ramp, class_scheme, thickness
         draw = ImageDraw.Draw(pil_im)
 
         for i, bbox in enumerate(labels["bboxes"]):
-            # PIL uses a top-left origin (0, 0)
-            bottom, left, top, right = bbox
+            # Tensorflow bbox order: (ymin, xmin, ymax, xmax)
+            # PIL and Tensorflow both use a top-left origin (0, 0). So top = ymin and bottom = ymax.
+            top, left, bottom, right = bbox
 
             bbox_class = labels["classes"][i]
             bbox_score = labels["scores"][i]
@@ -764,6 +765,9 @@ def plot_bboxes_on_image(image_path, labels, color_ramp, class_scheme, thickness
             bbox_color = color_ramp[bbox_class]
             bbox_label = class_scheme[bbox_class]
 
+            print(f"TL: {left}, {top}, BR: {right}, {bottom}")
+
+            # PIL uses a top-left origin (0, 0)
             if thickness > 0:
                 draw.rectangle(
                     [(left, top), (right, bottom)], width=thickness, outline=bbox_color
@@ -776,7 +780,12 @@ def plot_bboxes_on_image(image_path, labels, color_ramp, class_scheme, thickness
             display_string = f"{bbox_label}, {format(bbox_score, '.2f')}"
 
             # box for display string
-            text_width, text_height = font.getsize(display_string)
+            text_left, text_top, text_right, text_bottom = font.getbbox(display_string)
+            text_width = text_right - text_left
+            text_height = text_bottom - text_top
+            print(f"left: {text_left}, top: {text_top}, right: {text_right}, bottom: {text_bottom}")
+            print(f"Text width: {text_width}, Text height: {text_height}")
+
             margin = np.ceil(0.05 * text_height)
             draw.rectangle(
                 [

@@ -86,7 +86,7 @@ async def async_object_detection(
     out_msg = (
         "Upload Successful! It may take our robots awhile to count all those debris, "
         "so you shouldn't wait around for them! Please save your Job ID (above) and "
-        "return later to retrieve your results at the 'Retrive Results' tab above!"
+        "return later to retrieve your results at the 'Retrive Results' tab (also above!)."
     )
 
     return {
@@ -215,7 +215,7 @@ md_description = """
 html_images = """
     <div style="background-color:white; padding: 10px; border-radius: 10px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <img src="http://orbtl.ai/wp-content/uploads/2022/09/orbtl_black_txtOnly_largeBorder.jpg?raw=true" width="30%" />
+            <img src="https://images.squarespace-cdn.com/content/635670ee5732332b70bed3d1/06f82def-6a73-46e4-b516-2633fd858077/ORBTL_logo_box%405x.jpg?content-type=image%2Fjpeg" width="25%" />
             <img src="https://oceanservice.noaa.gov/facts/noaa-emblem-rgb-2022.png?raw=true" width="20%" />
             <img src="https://communications.oregonstate.edu/sites/communications.oregonstate.edu/files/osu-primarylogo-2-compressor.jpg?raw=true" width="30%" />
         </div>
