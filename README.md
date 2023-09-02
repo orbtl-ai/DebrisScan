@@ -88,12 +88,29 @@ here][Docker-dnl].
 [Docker-dnl]: https://www.docker.com/products/docker-desktop/
 
 
-### Step 2: Download this Repo with Git
+### Step 2: Download and configure for your computer
+
+#### Download this Repo with Git
 To download the DebrisScan codebase you need to "clone" this repo to your local 
 computer with the following command:
 ```bash
 git clone https://github.com/orbtl-ai/DebrisScan.git
 ```
+
+#### Configure for your computer
+While the app is downloading, please create a folder on your computer for storing
+DebrisScan's output files (and temporary files processing files which will be
+cleaned automatically). This folder can be located and named however you prefer,
+however the location should have enough storage space to store copies of your data.
+
+Once the download is complete, locate the `.env` file in the `/DebrisScan` folder.
+Open this file and edit the top two values (`USER_APP_DATA` and `USER_DEBRISSCAN_APP_FOLDER`). 
+- `USER_APP_DATA` should be the path to the folder you created above. 
+- `USER_DEBRISSCAN_APP_FOLDER` should be the path to DebrisScan's `/app` folder.
+
+> **Note**
+> `.env` is a "hidden" file type. Try to enable the "Show Hidden Files" option in your
+> File Explorer application if the file is not showing.
 
 
 ### Step 3: Build and Run DebrisScan with Docker
@@ -114,7 +131,7 @@ docker compose up --build
 #### Upload Data and Begin Processing
 Once the Docker containers are running, the DebrisScan interface can be 
 accessed by opening your favorite web browser and navigating to the following 
-URL:`http://localhost:8080/`.
+URL: `http://localhost:8080/`.
 
 ![Image showing DebrisScan's Job Upload tab.][upl-image]
 

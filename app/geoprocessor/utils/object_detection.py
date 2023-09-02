@@ -779,12 +779,15 @@ def plot_bboxes_on_image(image_path, labels, color_ramp, class_scheme, thickness
 
             display_string = f"{bbox_label}, {format(bbox_score, '.2f')}"
 
-            # box for display string
+            # Determine H/W with .GETBBOX()
             text_left, text_top, text_right, text_bottom = font.getbbox(display_string)
             text_width = text_right - text_left
             text_height = text_bottom - text_top
             print(f"left: {text_left}, top: {text_top}, right: {text_right}, bottom: {text_bottom}")
-            print(f"Text width: {text_width}, Text height: {text_height}")
+
+            # Determine H/W with .GETSIZE() - used in later versions of PIL
+            #text_width, text_height = font.getsize(display_string)
+            #print(f"Text width: {text_width}, Text height: {text_height}")
 
             margin = np.ceil(0.05 * text_height)
             draw.rectangle(
