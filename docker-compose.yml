@@ -24,15 +24,15 @@ services:
       - debrisscan-network
     volumes:
       - type: bind
-        source: ~/Documents/app_data
+        source: $USER_APP_DATA
         target: /app_data
         read_only: false
       - type: bind
-        source: ~/Documents/git/DebrisScan/app
+        source: $USER_DEBRISSCAN_APP_FOLDER
         target: /app
         read_only: false
     env_file:
-      - .env.dev
+      - .env
     command: gradio client/app.py  # enables "reload mode" as of Gradio 3.1
     #command: python /app/client/app.py
     depends_on:
@@ -50,15 +50,15 @@ services:
       - debrisscan-network
     volumes:
       - type: bind
-        source: ~/Documents/app_data
+        source: $USER_APP_DATA
         target: /app_data
         read_only: false
       - type: bind
-        source: ~/Documents/git/DebrisScan/app
+        source: $USER_DEBRISSCAN_APP_FOLDER
         target: /app
         read_only: false
     env_file:
-      - .env.dev
+      - .env
     command: celery -A geoprocessor.tasks.celery_app worker --loglevel=info --concurrency=1 #--uid=nobody --gid=nogroup
     depends_on:
       - backend
@@ -80,7 +80,7 @@ services:
       - debrisscan-network
     volumes:
       - type: bind
-        source: ~/Documents/app_data
+        source: $USER_APP_DATA
         target: /app_data
         read_only: false
     #environment:
@@ -113,7 +113,7 @@ services:
     ports:
       - "5555:5555"
     env_file:
-      - .env.dev
+      - .env
     depends_on:
       - backend
 
