@@ -15,7 +15,7 @@
     },
     "Matrice 30T": {
         "platform_type": "UAV",
-        "camera_name": "Matrice 30T Zoom Camera",
+        "camera_name": "Matrice 30T",
         "focal_length_mm": 4.6,
         "sensor_height_cm": 1.13,
         "sensor_width_cm": 1.51
