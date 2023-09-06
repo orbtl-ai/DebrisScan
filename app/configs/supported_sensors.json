@@ -10,7 +10,14 @@
         "platform_type": "UAV",
         "camera_name": "Phantom 4 Pro",
         "focal_length_mm": 8.8,
-        "sensor_height_cm": 0.88,
-        "sensor_width_cm": 1.32
+        "sensor_height_cm": 0.58,
+        "sensor_width_cm": 0.88
+    },
+    "Matrice 30T": {
+        "platform_type": "UAV",
+        "camera_name": "Matrice 30T Zoom Camera",
+        "focal_length_mm": 4.6,
+        "sensor_height_cm": 1.13,
+        "sensor_width_cm": 1.51
     }
 }
