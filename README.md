@@ -103,13 +103,13 @@ DebrisScan's output files (and temporary files processing files which will be
 cleaned automatically). This folder can be located and named however you prefer,
 however the location should have enough storage space to store copies of your data.
 
-Once the download is complete, locate the `.env` file in the `/DebrisScan` folder.
+Once the download is complete, locate the `.env.dev` file in the `/DebrisScan` folder.
 Open this file and edit the top two values (`USER_APP_DATA` and `USER_DEBRISSCAN_APP_FOLDER`). 
 - `USER_APP_DATA` should be the path to the folder you created above. 
 - `USER_DEBRISSCAN_APP_FOLDER` should be the path to DebrisScan's `/app` folder.
 
 > **Note**
-> `.env` is a "hidden" file type. Try to enable the "Show Hidden Files" option in your
+> `.env.dev` is a "hidden" file type. Try to enable the "Show Hidden Files" option in your
 > File Explorer application if the file is not showing.
 
 
@@ -118,7 +118,7 @@ Once downloaded, navigate into the `DebrisScan/` folder and execute the
 following command from the root directory to simultaneously download the needed 
 software dependencies, build, configure, and run the entire app:
 ```bash
-docker compose up --build
+docker compose --env-file .env.dev up --build
 ```
 > **Note**
 > The first time you run this command it will take a while to download and 
