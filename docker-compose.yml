@@ -23,14 +23,8 @@ services:
     networks:
       - debrisscan-network
     volumes:
-      - type: bind
-        source: $USER_APP_DATA
-        target: /app_data
-        read_only: false
-      - type: bind
-        source: $USER_DEBRISSCAN_APP_FOLDER
-        target: /app
-        read_only: false
+      - ./app:/app
+      - debrisscan-data:/app_data
     env_file:
       - .env.dev
     command: gradio client/app.py  # enables "reload mode" as of Gradio 3.1
@@ -49,14 +43,8 @@ services:
     networks:
       - debrisscan-network
     volumes:
-      - type: bind
-        source: $USER_APP_DATA
-        target: /app_data
-        read_only: false
-      - type: bind
-        source: $USER_DEBRISSCAN_APP_FOLDER
-        target: /app
-        read_only: false
+      - ./app:/app
+      - debrisscan-data:/app_data
     env_file:
       - .env.dev
     command: celery -A geoprocessor.tasks.celery_app worker --loglevel=info --concurrency=1 #--uid=nobody --gid=nogroup
@@ -79,10 +67,7 @@ services:
     networks:
       - debrisscan-network
     volumes:
-      - type: bind
-        source: $USER_APP_DATA
-        target: /app_data
-        read_only: false
+      - debrisscan-data:/app_data
     #environment:
     #  MODEL_NAME: efficientdet-d0
     #  OMP_NUM_THREADS: 4                          # replace by the number of cores
@@ -116,6 +101,9 @@ services:
       - .env.dev
     depends_on:
       - backend
+
+volumes:
+  debrisscan-data:
 
 networks:
   debrisscan-network:
